@@ -103,6 +103,7 @@ require('packer').startup(function(use)
   use 'hrsh7th/cmp-path'
   use 'hrsh7th/cmp-cmdline'
   use 'saadparwaiz1/cmp_luasnip'
+  use 'jose-elias-alvarez/null-ls.nvim'
 
   -- Snippets
   use 'L3MON4D3/LuaSnip'
@@ -292,7 +293,7 @@ require('gitsigns').setup {
 
 ----------------------lsp----------------------
 
-local lsp_on_attach = function(_, bufnr)
+local lsp_on_attach = function(client, bufnr)
   local lsp_options = { noremap = true, silent = true, buffer = bufnr }
 
   map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
@@ -311,6 +312,11 @@ local lsp_on_attach = function(_, bufnr)
 
   map('n', 'K', vim.lsp.buf.hover, lsp_options)
   map('n', '<leader>D', vim.lsp.buf.type_definition, lsp_options)
+
+  -- disable tsserver formatting in favor of prettier
+  if client.name == 'tsserver' then
+    client.resolved_capabilities.document_formatting = false
+  end
 end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
@@ -344,6 +350,16 @@ for _, lsp in ipairs(servers) do
     }
   }
 end
+
+-- formatting
+local null_ls = require('null-ls')
+null_ls.setup {
+  sources = {
+    null_ls.builtins.formatting.prettier,
+    null_ls.builtins.diagnostics.eslint,
+    null_ls.builtins.code_actions.eslint,
+  }
+}
 
 -- brew install lua-language-server
 require'lspconfig'.sumneko_lua.setup {
