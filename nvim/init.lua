@@ -339,6 +339,7 @@ local servers = {
   'yamlls',        -- npm install --location=global yaml-language-server
   'eslint',        -- npm install --location=global vscode-langservers-extracted
   'rust_analyzer', -- brew install rust_analyzer
+  'prismals',      -- npm install --location=global @prisma/language-server
 }
 
 for _, lsp in ipairs(servers) do
@@ -351,7 +352,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 
--- formatting
+-- formatting with null-ls
 local null_ls = require('null-ls')
 null_ls.setup {
   sources = {
