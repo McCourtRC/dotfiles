@@ -338,7 +338,7 @@ local servers = {
   'jsonls',        -- npm install --location=global vscode-langservers-extracted
   'yamlls',        -- npm install --location=global yaml-language-server
   'eslint',        -- npm install --location=global vscode-langservers-extracted
-  'rust_analyzer', -- brew install rust_analyzer
+  'rust_analyzer', -- brew install rust-analyzer
   'prismals',      -- npm install --location=global @prisma/language-server
 }
 
