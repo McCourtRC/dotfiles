@@ -185,6 +185,10 @@ map('n', '<C-h>', '<C-w>h', options)
 map('n', '<C-l>', '<C-w>l', options)
 map('n', '<C-q>', '<C-w>c', options)
 
+-- Tab Navigation
+map('n', 'H', 'gT', options)
+map('n', 'L', 'gt', options)
+
 -- Help
 map('v', '<leader>h', 'y:vert help <C-r>" <CR>', options)
 
