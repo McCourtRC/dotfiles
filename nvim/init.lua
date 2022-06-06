@@ -193,7 +193,7 @@ map('n', '<leader>%', '<cmd>source % <CR>', options)
 
 -- Blank line
 map('n', '<leader>o', 'mmo<Esc>`m', options)
-map('n', '<>O', 'mmO<Esc>`m', options)
+map('n', '<leader>O', 'mmO<Esc>`m', options)
 
 -- Paste Yanked
 map({ 'n', 'v' }, '<leader>p', '"0p', options)
