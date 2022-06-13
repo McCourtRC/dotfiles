@@ -189,6 +189,16 @@ map('n', '<C-q>', '<C-w>c', options)
 map('n', 'H', 'gT', options)
 map('n', 'L', 'gt', options)
 
+-- QuickFix Navigation
+map('n', ']q', ':cnext <CR>', options)
+map('n', '[q', ':cprev <CR>', options)
+
+-- Jump to last insert
+map('n', 'g.', 'gi', options)
+
+-- Yank to clipboard
+map({ 'n', 'v' }, '<leader>y', '"+y', options)
+
 -- Help
 map('v', '<leader>h', 'y:vert help <C-r>" <CR>', options)
 
