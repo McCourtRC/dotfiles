@@ -80,10 +80,26 @@ require('packer').startup(function(use)
   }
 
   -- Telescope
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   use { 'nvim-telescope/telescope.nvim',    -- brew install ripgrep
     requires = {{'nvim-lua/plenary.nvim'}},
+    config = function ()
+      require('telescope').setup {
+        defaults = {
+          file_ignore_patterns = {
+            'node_modules',     -- npm
+            'packer_compiled',  -- lua
+            'target',           -- rust
+          },
+          sorting_strategy='ascending',
+          layout_config = {
+            prompt_position = 'top'
+          }
+        }
+      }
+      require('telescope').load_extension('fzf')
+    end
   }
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
 
   -- Harpoon
   use { 'ThePrimeagen/harpoon',
@@ -114,21 +130,6 @@ require('packer').startup(function(use)
 end)
 
 require('impatient')
-
-require('telescope').setup {
-  defaults = {
-    file_ignore_patterns = {
-      'node_modules',     -- npm
-      'packer_compiled',  -- lua
-      'target',           -- rust
-    },
-    sorting_strategy='ascending',
-    layout_config = {
-      prompt_position = 'top'
-    }
-  }
-}
-require('telescope').load_extension('fzf')
 
 ----------------------config----------------------
 local o  = vim.o
