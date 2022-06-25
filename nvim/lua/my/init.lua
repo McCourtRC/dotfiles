@@ -183,7 +183,7 @@ map('n', '<C-j>', '<C-w>j', options)
 map('n', '<C-k>', '<C-w>k', options)
 map('n', '<C-h>', '<C-w>h', options)
 map('n', '<C-l>', '<C-w>l', options)
-map('n', '<C-q>', '<C-w>c', options)
+map('n', '<C-c>', '<C-w>c', options)
 
 -- Tab Navigation
 map('n', 'H', 'gT', options)
