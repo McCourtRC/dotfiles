@@ -124,6 +124,20 @@ require('packer').startup(function(use)
   -- Snippets
   use 'L3MON4D3/LuaSnip'
 
+  -- Smooth Scroll
+  use { 'karb94/neoscroll.nvim',
+    config = function ()
+      require('neoscroll').setup({
+        mappings = { '<C-d>', '<C-u>' },
+      })
+      require('neoscroll.config').set_mappings({
+        ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '60', nil} },
+        ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '60', nil} }
+      })
+
+    end
+  }
+
   if packer_bootstrap then
     require('packer').sync()
   end
