@@ -30,10 +30,21 @@ require('packer').startup(function(use)
 
   -- TPope
   use 'tpope/vim-surround'
-  use 'tpope/vim-fugitive'
+  -- use 'tpope/vim-fugitive'
 
   -- Plenary
   use 'nvim-lua/plenary.nvim'
+
+  -- Neogit
+  use { 'sindrets/diffview.nvim',
+    requires = 'nvim-lua/plenary.nvim',
+  }
+  use { 'TimUntersberger/neogit',
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'sindrets/diffview.nvim',
+    },
+  }
 
   -- Git signs
   use { 'lewis6991/gitsigns.nvim',
@@ -240,6 +251,19 @@ map('n', "<leader>'", ':e # <CR>', options)
 
 -- Terminal
 map('t', '<Esc>', '<C-\\><C-n>', options)
+
+-- Neogit
+local neogit = require('neogit')
+local diffview = require('neogit.integrations.diffview')
+neogit.setup({
+  auto_refresh = false,
+  integrations = {
+    diffview = true,
+  }
+})
+
+map('n', '<leader>gg', neogit.open, options)
+map('n', '<leader>gd', diffview.open, options)
 
 -- Hop
 local hop = require('hop')
