@@ -405,6 +405,7 @@ for _, lsp in ipairs(servers) do
 end
 
 -- formatting with null-ls
+-- npm install --location=global prettier eslint
 local null_ls = require('null-ls')
 null_ls.setup {
   sources = {
