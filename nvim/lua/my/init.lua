@@ -254,7 +254,9 @@ map('t', '<Esc>', '<C-\\><C-n>', options)
 
 -- Neogit
 local neogit = require('neogit')
-local diffview = require('neogit.integrations.diffview')
+local diffview = require('diffview')
+local neogit_diffview = require('neogit.integrations.diffview')
+
 neogit.setup({
   auto_refresh = false,
   integrations = {
@@ -262,8 +264,22 @@ neogit.setup({
   }
 })
 
+
+diffview.setup({
+  key_bindings = {
+    view = {
+      ['q'] = neogit_diffview.diffview_mappings.close,
+      ['<ESC>'] = neogit_diffview.diffview_mappings.close,
+    },
+    file_panel = {
+      ['q'] = neogit_diffview.diffview_mappings.close,
+      ['<ESC>'] = neogit_diffview.diffview_mappings.close,
+    }
+  }
+})
+
 map('n', '<leader>gg', neogit.open, options)
-map('n', '<leader>gd', diffview.open, options)
+map('n', '<leader>gd', neogit_diffview.open, options)
 
 -- Hop
 local hop = require('hop')
