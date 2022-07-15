@@ -29,8 +29,14 @@ require('packer').startup(function(use)
   }
 
   -- TPope
-  use 'tpope/vim-surround'
+  -- use 'tpope/vim-surround'
   -- use 'tpope/vim-fugitive'
+
+  use { 'kylechui/nvim-surround',
+    config = function ()
+      require('nvim-surround').setup {}
+    end
+  }
 
   -- Plenary
   use 'nvim-lua/plenary.nvim'
