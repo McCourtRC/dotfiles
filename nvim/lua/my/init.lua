@@ -20,6 +20,7 @@ require('packer').startup(function(use)
   use 'EdenEast/nightfox.nvim'
   use 'folke/tokyonight.nvim'
   use 'Mofiqul/dracula.nvim'
+  use { 'Everblush/everblush.nvim', as = 'everblush' }
 
   -- Commentary
   use { 'numToStr/Comment.nvim',
@@ -126,6 +127,7 @@ require('packer').startup(function(use)
   -- Treesitter
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use 'nvim-treesitter/nvim-treesitter-textobjects'
+  use 'nvim-treesitter/nvim-treesitter-context'
   use 'nvim-treesitter/playground'
 
   -- Completion
@@ -201,6 +203,7 @@ vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme nightfox]]
 -- vim.cmd[[colorscheme tokyonight]]
 -- vim.cmd[[colorscheme dracula]]
+-- vim.cmd[[colorscheme everblush]]
 
 ----------------------mappings----------------------
 local map = vim.keymap.set
@@ -297,6 +300,7 @@ map('n', '<leader>fe', '<cmd>NvimTreeToggle <CR>', options)
 
 -- Telescope
 local telescope_builtin = require('telescope.builtin')
+map('n', '<leader>f.', telescope_builtin.resume, options)
 map('n', '<leader>ff', telescope_builtin.find_files, options)
 map('n', '<leader>f/', telescope_builtin.live_grep, options)
 map('n', '<leader>/',  telescope_builtin.current_buffer_fuzzy_find, options)
@@ -379,6 +383,7 @@ local lsp_on_attach = function(client, bufnr)
   map('n', '<leader>dj', vim.diagnostic.goto_next, lsp_options)
   map('n', '[d',         vim.diagnostic.goto_prev, lsp_options)
   map('n', '<leader>dk', vim.diagnostic.goto_prev, lsp_options)
+  map('n', '<leader>dl', vim.diagnostic.open_float, lsp_options)
 
   map('n', '<leader>ca', vim.lsp.buf.code_action, lsp_options)
   map('n', '<leader>rn', vim.lsp.buf.rename, lsp_options)
@@ -545,11 +550,57 @@ require'nvim-treesitter.configs'.setup {
       enable = true,
       lookahead = true,
       keymaps = {
-        ["af"] = "@function.outer",
         ["if"] = "@function.inner",
-        ["ac"] = "@class.outer",
-        ["ic"] = "@class.inner",
+        ["af"] = "@function.outer",
         ["ir"] = "@parameter.inner",
+        ["ar"] = "@parameter.outer",
+
+        -- custom
+        ["iv"] = "@variable.inner",
+        ["av"] = "@variable.outer",
+        ["it"] = "@type.inner",
+        ["at"] = "@type.outer",
+      },
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>xr"] = "@parameter.inner",
+        ["<leader>xf"] = "@function.outer",
+        ["<leader>xv"] = "@variable.outer",
+      },
+      swap_previous = {
+        ["<leader>xR"] = "@parameter.inner",
+        ["<leader>xF"] = "@function.outer",
+        ["<leader>xV"] = "@variable.outer",
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        ["]r"] = "@parameter.inner",
+        ["]t"] = "@type.inner",
+        ["]f"] = "@function.outer",
+        ["]v"] = "@variable.outer",
+      },
+      goto_next_end = {
+        ["]R"] = "@parameter.inner",
+        ["]T"] = "@type.inner",
+        ["]F"] = "@function.outer",
+        ["]V"] = "@variable.outer",
+      },
+      goto_previous_start = {
+        ["[r"] = "@parameter.inner",
+        ["[t"] = "@type.inner",
+        ["[f"] = "@function.outer",
+        ["[v"] = "@variable.outer",
+      },
+      goto_previous_end = {
+        ["[R"] = "@parameter.inner",
+        ["[T"] = "@type.inner",
+        ["[F"] = "@function.outer",
+        ["[V"] = "@variable.outer",
       },
     },
   },
