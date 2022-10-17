@@ -21,6 +21,7 @@ require('packer').startup(function(use)
   use 'folke/tokyonight.nvim'
   use 'Mofiqul/dracula.nvim'
   use { 'Everblush/everblush.nvim', as = 'everblush' }
+  use {'shaunsingh/oxocarbon.nvim', run = './install.sh'}
 
   -- Commentary
   use { 'numToStr/Comment.nvim',
@@ -83,7 +84,7 @@ require('packer').startup(function(use)
 
   -- Sneak
   use { 'phaazon/hop.nvim',
-    branch = 'v1', -- optional but strongly recommended
+    branch = 'v2', -- optional but strongly recommended
     config = function()
       require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
     end
@@ -204,6 +205,7 @@ vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme tokyonight]]
 -- vim.cmd[[colorscheme dracula]]
 -- vim.cmd[[colorscheme everblush]]
+-- vim.cmd[[colorscheme oxocarbon]]
 
 ----------------------mappings----------------------
 local map = vim.keymap.set
@@ -293,7 +295,7 @@ map('n', '<leader>gd', neogit_diffview.open, options)
 -- Hop
 local hop = require('hop')
 map({ 'n', 'v' }, 's', hop.hint_char1 ,options)
-map({ 'n', 'v' }, 'S', hop.hint_lines, options)
+map({ 'n', 'v' }, 'S', hop.hint_lines_skip_whitespace, options)
 
 -- Nvim Tree
 map('n', '<leader>fe', '<cmd>NvimTreeToggle <CR>', options)
@@ -388,14 +390,14 @@ local lsp_on_attach = function(client, bufnr)
 
   map('n', '<leader>ca', vim.lsp.buf.code_action, lsp_options)
   map('n', '<leader>rn', vim.lsp.buf.rename, lsp_options)
-  map('n', '<leader>=',  vim.lsp.buf.formatting, lsp_options)
+  map('n', '<leader>=',  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
 
   map('n', 'K', vim.lsp.buf.hover, lsp_options)
   map('n', '<leader>D', vim.lsp.buf.type_definition, lsp_options)
 
   -- disable tsserver formatting in favor of prettier
   if client.name == 'tsserver' then
-    client.resolved_capabilities.document_formatting = false
+    client.server_capabilities.document_formatting = false
   end
 end
 
@@ -405,7 +407,7 @@ end
 local lspconfig = require('lspconfig')
 
 --Enable (broadcasting) snippet capability for completion
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local servers = {
@@ -438,7 +440,7 @@ local null_ls = require('null-ls')
 null_ls.setup {
   sources = {
     null_ls.builtins.formatting.prettier,
-    null_ls.builtins.diagnostics.eslint,
+    -- null_ls.builtins.diagnostics.eslint,
     null_ls.builtins.code_actions.eslint,
   }
 }
