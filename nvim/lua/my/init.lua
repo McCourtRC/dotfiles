@@ -93,7 +93,7 @@ require('packer').startup(function(use)
   -- File Tree
   use { 'kyazdani42/nvim-tree.lua',
     requires = 'kyazdani42/nvim-web-devicons',
-    config = function()
+    config = function ()
       require('nvim-tree').setup()
     end
   }
@@ -157,15 +157,18 @@ require('packer').startup(function(use)
 
     end
   }
-
+  
   if packer_bootstrap then
     require('packer').sync()
   end
 end)
 
 require('impatient')
+vim.g.loaded = 1
+vim.g.loaded_netrwPlugin = 1
 
 ----------------------config----------------------
+
 local o  = vim.o
 local wo = vim.wo
 -- local bo = vim.bo
@@ -229,9 +232,6 @@ map('n', 'L', 'gt', options)
 -- QuickFix Navigation
 map('n', ']q', ':cnext <CR>', options)
 map('n', '[q', ':cprev <CR>', options)
-
--- Jump to last insert
-map('n', 'g.', 'gi', options)
 
 -- Yank to clipboard
 map({ 'n', 'v' }, '<leader>y', '"+y', options)
@@ -380,7 +380,7 @@ local lsp_on_attach = function(client, bufnr)
   map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
   map('n', 'gd', vim.lsp.buf.definition, lsp_options)
   map('n', 'gr', vim.lsp.buf.references, lsp_options)
-  map('n', 'gi', vim.lsp.buf.implementation, lsp_options)
+  map('n', 'gI', vim.lsp.buf.implementation, lsp_options)
 
   map('n', ']d',         vim.diagnostic.goto_next, lsp_options)
   map('n', '<leader>dj', vim.diagnostic.goto_next, lsp_options)
