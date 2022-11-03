@@ -202,7 +202,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Color Schemes
-vim.g.catppuccin_flavour = "macchiato" -- latte, frappe, macchiato, mocha
+require("catppuccin").setup({
+  flavour = "macchiato" -- latte, frappe, macchiato, mocha
+})
 vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme nightfox]]
 -- vim.cmd[[colorscheme tokyonight]]
