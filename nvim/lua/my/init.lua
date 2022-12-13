@@ -268,31 +268,31 @@ map('t', '<Esc>', '<C-\\><C-n>', options)
 -- Neogit
 local neogit = require('neogit')
 local diffview = require('diffview')
-local neogit_diffview = require('neogit.integrations.diffview')
+-- local neogit_diffview = require('neogit.integrations.diffview')
 
 neogit.setup({
   auto_refresh = false,
-  integrations = {
-    diffview = true,
-  }
+  -- integrations = {
+  --   diffview = true,
+  -- }
 })
 
 
 diffview.setup({
   key_bindings = {
     view = {
-      ['q'] = neogit_diffview.diffview_mappings.close,
-      ['<ESC>'] = neogit_diffview.diffview_mappings.close,
+      -- ['q'] = neogit_diffview.diffview_mappings.close,
+      -- ['<ESC>'] = neogit_diffview.diffview_mappings.close,
     },
     file_panel = {
-      ['q'] = neogit_diffview.diffview_mappings.close,
-      ['<ESC>'] = neogit_diffview.diffview_mappings.close,
+      -- ['q'] = neogit_diffview.diffview_mappings.close,
+      -- ['<ESC>'] = neogit_diffview.diffview_mappings.close,
     }
   }
 })
 
 map('n', '<leader>gg', neogit.open, options)
-map('n', '<leader>gd', neogit_diffview.open, options)
+-- map('n', '<leader>gd', neogit_diffview.open, options)
 
 -- Hop
 local hop = require('hop')
@@ -472,6 +472,19 @@ require'lspconfig'.sumneko_lua.setup {
   },
 }
 
+-- brew install ccls?
+require'lspconfig'.ccls.setup {
+  init_options = {
+    compilationDatabaseDirectory = "build";
+    index = {
+      threads = 0;
+    };
+    clang = {
+      excludeArgs = { "-frounding-math"} ;
+    };
+  }
+}
+
 -- "nvim-ts-autotag" setting to prevent bad diagnostics in {j,t}sx
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics,
@@ -565,6 +578,11 @@ require'nvim-treesitter.configs'.setup {
         ["av"] = "@variable.outer",
         ["it"] = "@type.inner",
         ["at"] = "@type.outer",
+        ["ah"] = "@heading.outer",
+        ["a;"] = "@pair",
+        ["ak"] = "@key",
+        ["al"] = "@value",
+        ["ii"] = "@item.inner",
       },
     },
     swap = {
@@ -573,11 +591,15 @@ require'nvim-treesitter.configs'.setup {
         ["<leader>xr"] = "@parameter.inner",
         ["<leader>xf"] = "@function.outer",
         ["<leader>xv"] = "@variable.outer",
+        ["<leader>x;"] = "@pair",
+        ["<leader>xi"] = "@item.inner",
       },
       swap_previous = {
         ["<leader>xR"] = "@parameter.inner",
         ["<leader>xF"] = "@function.outer",
         ["<leader>xV"] = "@variable.outer",
+        ["<leader>x:"] = "@pair",
+        ["<leader>xI"] = "@item.inner",
       },
     },
     move = {
@@ -588,24 +610,42 @@ require'nvim-treesitter.configs'.setup {
         ["]t"] = "@type.inner",
         ["]f"] = "@function.outer",
         ["]v"] = "@variable.outer",
+        ["]h"] = "@heading.outer",
+        ["];"] = "@pair",
+        ["]k"] = "@key",
+        ["]l"] = "@value",
+        ["]i"] = "@item.inner",
       },
       goto_next_end = {
         ["]R"] = "@parameter.inner",
         ["]T"] = "@type.inner",
         ["]F"] = "@function.outer",
         ["]V"] = "@variable.outer",
+        ["]:"] = "@pair",
+        ["]K"] = "@key",
+        ["]L"] = "@value",
+        ["]I"] = "@item.inner",
       },
       goto_previous_start = {
         ["[r"] = "@parameter.inner",
         ["[t"] = "@type.inner",
         ["[f"] = "@function.outer",
         ["[v"] = "@variable.outer",
+        ["[h"] = "@heading.outer",
+        ["[;"] = "@pair",
+        ["[k"] = "@key",
+        ["[l"] = "@value",
+        ["[i"] = "@item.inner",
       },
       goto_previous_end = {
         ["[R"] = "@parameter.inner",
         ["[T"] = "@type.inner",
         ["[F"] = "@function.outer",
         ["[V"] = "@variable.outer",
+        ["[:"] = "@pair",
+        ["[K"] = "@key",
+        ["[L"] = "@value",
+        ["[I"] = "@item.inner",
       },
     },
   },
