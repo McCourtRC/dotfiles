@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # kitty
-cp -r ~/.config/kitty/ kitty/
+cp -R ~/.config/kitty/ kitty/
 
 # nvim
-cp -r ~/.config/nvim/ nvim/
+cp -R ~/.config/nvim/ nvim/
