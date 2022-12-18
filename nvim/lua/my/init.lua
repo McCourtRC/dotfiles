@@ -132,14 +132,27 @@ require('packer').startup(function(use)
   use 'nvim-treesitter/playground'
 
   -- Completion
-  use 'neovim/nvim-lspconfig'
-  use 'hrsh7th/nvim-cmp'
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'hrsh7th/cmp-buffer'
-  use 'hrsh7th/cmp-path'
-  use 'hrsh7th/cmp-cmdline'
-  use 'saadparwaiz1/cmp_luasnip'
-  use 'jose-elias-alvarez/null-ls.nvim'
+  use {
+    'VonHeikemen/lsp-zero.nvim',
+    requires = {
+      -- LSP Support
+      {'neovim/nvim-lspconfig'},
+      {'williamboman/mason.nvim'},
+      {'williamboman/mason-lspconfig.nvim'},
+
+      -- Autocompletion
+      {'hrsh7th/nvim-cmp'},
+      {'hrsh7th/cmp-buffer'},
+      {'hrsh7th/cmp-path'},
+      {'saadparwaiz1/cmp_luasnip'},
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'hrsh7th/cmp-nvim-lua'},
+
+      -- Snippets
+      {'L3MON4D3/LuaSnip'},
+      {'rafamadriz/friendly-snippets'},
+    }
+  }
 
   -- Snippets
   use 'L3MON4D3/LuaSnip'
@@ -277,7 +290,6 @@ neogit.setup({
   -- }
 })
 
-
 diffview.setup({
   key_bindings = {
     view = {
@@ -376,7 +388,31 @@ require('gitsigns').setup {
 }
 
 ----------------------lsp----------------------
-local lsp_on_attach = function(client, bufnr)
+local lsp = require('lsp-zero')
+
+lsp.preset('recommended')
+
+lsp.set_preferences({
+  set_lsp_keymaps = false,
+})
+
+lsp.ensure_installed({
+  'eslint',
+  'rust_analyzer',
+  'sumneko_lua',
+  'tsserver',
+  'html',
+  'cssls',
+  'tailwindcss',
+  'graphql',
+  'jsonls',
+  'yamlls',
+})
+
+lsp.nvim_workspace()
+lsp.setup()
+
+lsp.on_attach(function(client, bufnr)
   local lsp_options = { noremap = true, silent = true, buffer = bufnr }
 
   map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
@@ -401,89 +437,7 @@ local lsp_on_attach = function(client, bufnr)
   if client.name == 'tsserver' then
     client.server_capabilities.document_formatting = false
   end
-end
-
--- Use a loop to conveniently call 'setup' on multiple servers and
--- map buffer local keybindings when the language server attaches
--- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-local lspconfig = require('lspconfig')
-
---Enable (broadcasting) snippet capability for completion
-local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-local servers = {
-  'tsserver',      -- npm install --location=global typescript typescript-language-server
-  'html',          -- npm install --location=global vscode-langservers-extracted
-  'cssls',         -- npm install --location=global vscode-langservers-extracted
-  'tailwindcss',   -- npm install --location=global @tailwindcss/language-server
-  'svelte',        -- npm install --location=global svelte-language-server
-  'graphql',       -- npm install --location=global graphql-language-service-cli
-  'jsonls',        -- npm install --location=global vscode-langservers-extracted
-  'yamlls',        -- npm install --location=global yaml-language-server
-  'eslint',        -- npm install --location=global vscode-langservers-extracted
-  'rust_analyzer', -- brew install rust-analyzer
-  'prismals',      -- npm install --location=global @prisma/language-server
-}
-
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = lsp_on_attach,
-    capabilities = capabilities,
-    flags = {
-      debounce_text_changes = 150,
-    }
-  }
-end
-
--- formatting with null-ls
--- npm install --location=global prettier eslint
-local null_ls = require('null-ls')
-null_ls.setup {
-  sources = {
-    null_ls.builtins.formatting.prettier,
-    -- null_ls.builtins.diagnostics.eslint,
-    null_ls.builtins.code_actions.eslint,
-  }
-}
-
--- brew install lua-language-server
-require'lspconfig'.sumneko_lua.setup {
-  on_attach = lsp_on_attach,
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { 'vim' },
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = vim.api.nvim_get_runtime_file("", true),
-      },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = {
-        enable = false,
-      },
-    },
-  },
-}
-
--- brew install ccls?
-require'lspconfig'.ccls.setup {
-  init_options = {
-    compilationDatabaseDirectory = "build";
-    index = {
-      threads = 0;
-    };
-    clang = {
-      excludeArgs = { "-frounding-math"} ;
-    };
-  }
-}
+end)
 
 -- "nvim-ts-autotag" setting to prevent bad diagnostics in {j,t}sx
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
@@ -531,15 +485,6 @@ cmp.setup.cmdline('/', {
     { name = 'buffer', keyword_length = 5 }
   }
 })
-
--- cmp.setup.cmdline(':', {
---   mapping = cmp.mapping.preset.cmdline(),
---   sources = cmp.config.sources({
---     { name = 'path' }
---   }, {
---     { name = 'cmdline', keyword_length = 5 }
---   })
--- })
 
 ----------------------treesitter----------------------
 require'nvim-treesitter.configs'.setup {
