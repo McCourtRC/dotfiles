@@ -18,7 +18,7 @@ require('packer').startup(function(use)
   -- Color Schemes
   use { "catppuccin/nvim", as = "catppuccin" }
   use 'EdenEast/nightfox.nvim'
-  use 'folke/tokyonight.nvim'
+  -- use 'folke/tokyonight.nvim'
   use 'Mofiqul/dracula.nvim'
   use { 'Everblush/everblush.nvim', as = 'everblush' }
   use {'shaunsingh/oxocarbon.nvim', run = './install.sh'}
@@ -29,10 +29,6 @@ require('packer').startup(function(use)
       require('Comment').setup {}
     end
   }
-
-  -- TPope
-  -- use 'tpope/vim-surround'
-  -- use 'tpope/vim-fugitive'
 
   use { 'kylechui/nvim-surround',
     config = function ()
@@ -154,9 +150,6 @@ require('packer').startup(function(use)
     }
   }
 
-  -- Snippets
-  use 'L3MON4D3/LuaSnip'
-
   -- Smooth Scroll
   use { 'karb94/neoscroll.nvim',
     config = function ()
@@ -164,13 +157,13 @@ require('packer').startup(function(use)
         mappings = { '<C-d>', '<C-u>' },
       })
       require('neoscroll.config').set_mappings({
-        ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '60', nil} },
-        ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '60', nil} }
+        ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '50', nil} },
+        ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '50', nil} }
       })
 
     end
   }
-  
+
   if packer_bootstrap then
     require('packer').sync()
   end
@@ -308,8 +301,8 @@ map('n', '<leader>gg', neogit.open, options)
 
 -- Hop
 local hop = require('hop')
-map({ 'n', 'v' }, 's', hop.hint_char1 ,options)
-map({ 'n', 'v' }, 'S', hop.hint_lines_skip_whitespace, options)
+map({ 'n' }, 's', hop.hint_char1 ,options)
+map({ 'n' }, 'S', hop.hint_lines_skip_whitespace, options)
 
 -- Nvim Tree
 map('n', '<leader>fe', '<cmd>NvimTreeToggle <CR>', options)
@@ -343,10 +336,6 @@ map('n', '<leader>k', function() harpoon_ui.nav_file(2) end, options)
 map('n', '<leader>l', function() harpoon_ui.nav_file(3) end, options)
 map('n', '<leader>;', function() harpoon_ui.nav_file(4) end, options)
 map('n', '<leader>t', function() harpoon_term.gotoTerminal(0) end, options)
-
--- Lua Snip
-map({ 'i', 's' }, '<Tab>',   function() require("luasnip").jump(1) end, options)
-map({ 'i', 's' }, '<S-Tab>', function() require("luasnip").jump(-1) end, options)
 
 require('gitsigns').setup {
   on_attach = function(bufnr)
@@ -409,14 +398,24 @@ lsp.ensure_installed({
   'yamlls',
 })
 
-lsp.nvim_workspace()
-lsp.setup()
+-- Completion
+local cmp = require('cmp')
+
+lsp.setup_nvim_cmp({
+  mapping = lsp.defaults.cmp_mappings({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+})
 
 lsp.on_attach(function(client, bufnr)
   local lsp_options = { noremap = true, silent = true, buffer = bufnr }
 
-  map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
   map('n', 'gd', vim.lsp.buf.definition, lsp_options)
+  map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
   map('n', 'gr', vim.lsp.buf.references, lsp_options)
   map('n', 'gI', vim.lsp.buf.implementation, lsp_options)
 
@@ -432,59 +431,24 @@ lsp.on_attach(function(client, bufnr)
 
   map('n', 'K', vim.lsp.buf.hover, lsp_options)
   map('n', '<leader>D', vim.lsp.buf.type_definition, lsp_options)
-
-  -- disable tsserver formatting in favor of prettier
-  if client.name == 'tsserver' then
-    client.server_capabilities.document_formatting = false
-  end
 end)
 
+lsp.nvim_workspace()
+lsp.setup()
+
+-- Lua Snip
 -- "nvim-ts-autotag" setting to prevent bad diagnostics in {j,t}sx
-vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics,
-  {
-    underline = true,
-    virtual_text = {
-      spacing = 5,
-      severity_limit = 'Warning',
-    },
-    update_in_insert = true,
-  }
-)
-
-----------------------completion----------------------
-local cmp = require('cmp')
-local luasnip = require('luasnip')
-
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-  }),
-  sources = cmp.config.sources({
-    { name = 'luasnip' },
-    { name = 'nvim_lsp' },
-    { name = 'path' },
-  },
-  {
-    {name = 'buffer', keyword_length = 5}
-  })
-})
-
-cmp.setup.cmdline('/', {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = {
-    { name = 'buffer', keyword_length = 5 }
-  }
-})
+-- vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+--   vim.lsp.diagnostic.on_publish_diagnostics,
+--   {
+--     underline = true,
+--     virtual_text = {
+--       spacing = 5,
+--       severity_limit = 'Warning',
+--     },
+--     update_in_insert = true,
+--   }
+-- )
 
 ----------------------treesitter----------------------
 require'nvim-treesitter.configs'.setup {
@@ -597,6 +561,36 @@ require'nvim-treesitter.configs'.setup {
 }
 
 ----------------------snippets----------------------
+local luasnip = require('luasnip')
+
+luasnip.config.set_config({
+  history = true,
+  updateevents = 'TextChanged,TextChangedI',
+})
+
+map({ 'i', 's' }, '<C-j>', function()
+    if luasnip.expand_or_jumpable() then
+      luasnip.expand_or_jump()
+    end
+  end,
+  { silent = true }
+)
+
+map({ 'i', 's' }, '<C-k>', function()
+    if luasnip.jumpable(-1) then
+      luasnip.jump(-1)
+    end
+  end,
+  { silent = true }
+)
+
+map({ 'i', 's' }, '<C-l>', function()
+    if luasnip.choice_active() then
+      luasnip.change_choice(1)
+    end
+  end
+)
+
 local snip = luasnip.snippet
 local s = luasnip.snippet_node
 local t = luasnip.text_node
@@ -614,9 +608,6 @@ local fmt = require("luasnip.extras.fmt").fmt
 local fmta = require("luasnip.extras.fmt").fmta
 local types = require("luasnip.util.types")
 local conds = require("luasnip.extras.expand_conditions")
-
--- require("luasnip.loaders.from_vscode").lazy_load() -- opts can be ommited
-require("luasnip").config.setup({ store_selection_keys = "<Tab>" })
 
 -- luasnip.add_snippets('all', {
 -- })
