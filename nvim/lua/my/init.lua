@@ -1,3 +1,5 @@
+-- NOTE: if things get out of sync,
+--   clean up the ~/.local/share/nvim/ folders
 ----------------------wip----------------------
 -- require('extract').setup()
 
@@ -95,7 +97,7 @@ require('packer').startup(function(use)
   }
 
   -- Telescope
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
   use { 'nvim-telescope/telescope.nvim',    -- brew install ripgrep
     requires = {{'nvim-lua/plenary.nvim'}},
     config = function ()
