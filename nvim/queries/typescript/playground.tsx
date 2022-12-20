@@ -1,4 +1,6 @@
 type Person = {
+:qa
+
   name: string;
 };
 const list_of_numbers = [2, 3];
@@ -29,4 +31,11 @@ function something(a: number, another: string) {
   // console.log
 }
 
-function something_b(b: number) { }
+function Component(b: number) {
+  return (
+    <div>
+      <h1>Title</h1>
+      <p>paragraph with some words</p>
+    </div>
+  )
+}

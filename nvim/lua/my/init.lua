@@ -19,11 +19,11 @@ require('packer').startup(function(use)
 
   -- Color Schemes
   use { "catppuccin/nvim", as = "catppuccin" }
-  use 'EdenEast/nightfox.nvim'
+  -- use 'EdenEast/nightfox.nvim'
   -- use 'folke/tokyonight.nvim'
-  use 'Mofiqul/dracula.nvim'
-  use { 'Everblush/everblush.nvim', as = 'everblush' }
-  use {'shaunsingh/oxocarbon.nvim', run = './install.sh'}
+  -- use 'Mofiqul/dracula.nvim'
+  -- use { 'Everblush/everblush.nvim', as = 'everblush' }
+  -- use {'shaunsingh/oxocarbon.nvim', run = './install.sh'}
 
   -- Commentary
   use { 'numToStr/Comment.nvim',
@@ -153,18 +153,18 @@ require('packer').startup(function(use)
   }
 
   -- Smooth Scroll
-  use { 'karb94/neoscroll.nvim',
-    config = function ()
-      require('neoscroll').setup({
-        mappings = { '<C-d>', '<C-u>' },
-      })
-      require('neoscroll.config').set_mappings({
-        ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '50', nil} },
-        ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '50', nil} }
-      })
-
-    end
-  }
+  -- use { 'karb94/neoscroll.nvim',
+  --   config = function ()
+  --     require('neoscroll').setup({
+  --       mappings = { '<C-d>', '<C-u>' },
+  --     })
+  --     require('neoscroll.config').set_mappings({
+  --       ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '50', nil} },
+  --       ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '50', nil} }
+  --     })
+  --
+  --   end
+  -- }
 
   if packer_bootstrap then
     require('packer').sync()
@@ -388,15 +388,15 @@ lsp.set_preferences({
 })
 
 lsp.ensure_installed({
+  'cssls',
   'eslint',
+  'graphql',
+  'html',
+  'jsonls',
   'rust_analyzer',
   'sumneko_lua',
-  'tsserver',
-  'html',
-  'cssls',
   'tailwindcss',
-  'graphql',
-  'jsonls',
+  'tsserver',
   'yamlls',
 })
 
@@ -483,17 +483,23 @@ require'nvim-treesitter.configs'.setup {
         ["af"] = "@function.outer",
         ["ir"] = "@parameter.inner",
         ["ar"] = "@parameter.outer",
+        ["ac"] = "@comment.outer",
 
         -- custom
         ["iv"] = "@variable.inner",
         ["av"] = "@variable.outer",
         ["it"] = "@type.inner",
         ["at"] = "@type.outer",
-        ["ah"] = "@heading.outer",
         ["a;"] = "@pair",
+        ["i;"] = "@pair",
         ["ak"] = "@key",
+        ["ik"] = "@key",
         ["al"] = "@value",
+        ["il"] = "@value",
         ["ii"] = "@item.inner",
+        ["ai"] = "@item.outer",
+        ["ih"] = "@html.inner",
+        ["ah"] = "@html.outer",
       },
     },
     swap = {
@@ -504,6 +510,7 @@ require'nvim-treesitter.configs'.setup {
         ["<leader>xv"] = "@variable.outer",
         ["<leader>x;"] = "@pair",
         ["<leader>xi"] = "@item.inner",
+        ["<leader>xh"] = "@html.outer",
       },
       swap_previous = {
         ["<leader>xR"] = "@parameter.inner",
@@ -511,6 +518,7 @@ require'nvim-treesitter.configs'.setup {
         ["<leader>xV"] = "@variable.outer",
         ["<leader>x:"] = "@pair",
         ["<leader>xI"] = "@item.inner",
+        ["<leader>xH"] = "@html.outer",
       },
     },
     move = {
@@ -520,43 +528,49 @@ require'nvim-treesitter.configs'.setup {
         ["]r"] = "@parameter.inner",
         ["]t"] = "@type.inner",
         ["]f"] = "@function.outer",
+        ["]c"] = "@comment.outer",
         ["]v"] = "@variable.outer",
-        ["]h"] = "@heading.outer",
         ["];"] = "@pair",
         ["]k"] = "@key",
         ["]l"] = "@value",
         ["]i"] = "@item.inner",
+        ["]h"] = "@html.start",
       },
       goto_next_end = {
         ["]R"] = "@parameter.inner",
         ["]T"] = "@type.inner",
         ["]F"] = "@function.outer",
+        ["]C"] = "@comment.outer",
         ["]V"] = "@variable.outer",
         ["]:"] = "@pair",
         ["]K"] = "@key",
         ["]L"] = "@value",
         ["]I"] = "@item.inner",
+        ["]H"] = "@html.end",
       },
       goto_previous_start = {
         ["[r"] = "@parameter.inner",
         ["[t"] = "@type.inner",
         ["[f"] = "@function.outer",
+        ["[c"] = "@comment.outer",
         ["[v"] = "@variable.outer",
-        ["[h"] = "@heading.outer",
         ["[;"] = "@pair",
         ["[k"] = "@key",
         ["[l"] = "@value",
         ["[i"] = "@item.inner",
+        ["[h"] = "@html.start",
       },
       goto_previous_end = {
         ["[R"] = "@parameter.inner",
         ["[T"] = "@type.inner",
         ["[F"] = "@function.outer",
+        ["[C"] = "@comment.outer",
         ["[V"] = "@variable.outer",
         ["[:"] = "@pair",
         ["[K"] = "@key",
         ["[L"] = "@value",
         ["[I"] = "@item.inner",
+        ["[H"] = "@html.end",
       },
     },
   },

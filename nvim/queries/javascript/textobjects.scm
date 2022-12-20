@@ -9,4 +9,7 @@
   ) @pair
 )
 
-(array (_) @item.inner)
+(array 
+  ((_) @item.inner . ","? @_end) @item.outer
+  (#make-range! "item.outer" @item.inner @_end) 
+)

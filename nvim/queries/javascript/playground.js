@@ -1,4 +1,9 @@
-const list = [1, 2, 3];
+// here is a comment
+const list = [1, 213212, 3];
+
+/* here is a block quote
+* here are some lines
+* */
 
 const object = { key: "value" };
 const nested_object = {
@@ -7,4 +12,4 @@ const nested_object = {
   },
 };
 
-function something(a) {}
+function something(a) { }
