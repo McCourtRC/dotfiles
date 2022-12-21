@@ -20,15 +20,15 @@
   (#make-range! "item.outer" @item.inner @_end) 
 )
 
-; html
-(jsx_element) @html.outer
-; (jsx_element open_tag: (_) . (_) @html.inner)
-
-(jsx_opening_element
-  name: (identifier) @html.start
-)
-
-(jsx_closing_element
-  name: (identifier) @html.end
-)
+; ; html
+; (jsx_element) @html.outer
+; ; (jsx_element open_tag: (_) . (_) @html.inner)
+;
+; (jsx_opening_element
+;   name: (identifier) @html.start
+; )
+;
+; (jsx_closing_element
+;   name: (identifier) @html.end
+; )
 
