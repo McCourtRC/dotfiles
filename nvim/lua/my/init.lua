@@ -4,174 +4,174 @@
 -- require('extract').setup()
 
 ----------------------plugins----------------------
-local fn = vim.fn
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
+vim.opt.rtp:prepend(lazypath)
 
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'
-  use 'lewis6991/impatient.nvim'
-
+require('lazy').setup({
   -- lua docs
-  use 'milisims/nvim-luaref'
+  'milisims/nvim-luaref',
 
   -- Color Schemes
-  use { "catppuccin/nvim", as = "catppuccin" }
-  -- use 'EdenEast/nightfox.nvim'
-  -- use 'folke/tokyonight.nvim'
-  -- use 'Mofiqul/dracula.nvim'
-  -- use { 'Everblush/everblush.nvim', as = 'everblush' }
-  -- use {'shaunsingh/oxocarbon.nvim', run = './install.sh'}
+  { "catppuccin/nvim", name = "catppuccin" },
+  -- 'EdenEast/nightfox.nvim'
+  -- 'folke/tokyonight.nvim'
+  -- 'Mofiqul/dracula.nvim'
+  -- { 'Everblush/everblush.nvim', name = 'everblush' }
+  -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'}
 
   -- Commentary
-  use { 'numToStr/Comment.nvim',
-    config = function()
-      require('Comment').setup {}
+  { "numToStr/Comment.nvim", 
+    config =  function ()
+      require("Comment").setup({})
     end
-  }
+  },
 
-  use { 'kylechui/nvim-surround',
+  { "kylechui/nvim-surround",
     config = function ()
-      require('nvim-surround').setup {}
+      require("nvim-surround").setup({})
     end
-  }
+  },
 
   -- Plenary
-  use 'nvim-lua/plenary.nvim'
+  "nvim-lua/plenary.nvim",
 
   -- Neogit
-  use { 'sindrets/diffview.nvim',
-    requires = 'nvim-lua/plenary.nvim',
-  }
-  use { 'TimUntersberger/neogit',
-    requires = {
-      'nvim-lua/plenary.nvim',
-      'sindrets/diffview.nvim',
+  { "sindrets/diffview.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+  },
+  { "TimUntersberger/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim",
     },
-  }
+  },
 
   -- Git signs
-  use { 'lewis6991/gitsigns.nvim',
-    requires = {
-      'nvim-lua/plenary.nvim'
+  { "lewis6991/gitsigns.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim"
     }
-  }
+  },
 
   -- Status Line
-  use { 'nvim-lualine/lualine.nvim',
-    requires = {'kyazdani42/nvim-web-devicons', opt = true},
-  }
+  { "nvim-lualine/lualine.nvim",
+    dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
+  },
 
-  use { 'kyazdani42/nvim-web-devicons',  -- download: https://www.nerdfonts.com/font-downloads
+  { "kyazdani42/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
     config = function()
-        require('nvim-web-devicons').setup {
-          default = true
-        }
+      require("nvim-web-devicons").setup {
+        default = true
+      }
     end
-  }
+  },
 
   -- Autopairs
-  use { 'windwp/nvim-autopairs',
-    config = function() require('nvim-autopairs').setup{} end
-  }
+  { "windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup{} end
+  },
 
   -- HTML tags
-  use 'windwp/nvim-ts-autotag'
+  "windwp/nvim-ts-autotag",
 
   -- Sneak
-  use { 'phaazon/hop.nvim',
-    branch = 'v2', -- optional but strongly recommended
+  { "phaazon/hop.nvim",
+    branch = "v2", -- optional but strongly recommended
     config = function()
-      require('hop').setup { keys = 'etovxqpdygfblzhckisuran', term_seq_bias = 0.5 }
+      require("hop").setup { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 }
     end
-  }
+  },
 
   -- File Tree
-  use { 'kyazdani42/nvim-tree.lua',
-    requires = 'kyazdani42/nvim-web-devicons',
+  { "kyazdani42/nvim-tree.lua",
+    dependencies = "kyazdani42/nvim-web-devicons",
     config = function ()
-      require('nvim-tree').setup()
+      require("nvim-tree").setup()
     end
-  }
+  },
 
   -- Telescope
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
-  use { 'nvim-telescope/telescope.nvim',    -- brew install ripgrep
-    requires = {{'nvim-lua/plenary.nvim'}},
+  "nvim-telescope/telescope-fzy-native.nvim",
+  { "nvim-telescope/telescope.nvim",    -- brew install ripgrep
+    dependencies = {{"nvim-lua/plenary.nvim"}},
     config = function ()
-      require('telescope').setup {
+      require("telescope").setup({
         defaults = {
           file_ignore_patterns = {
-            'node_modules',     -- npm
-            'packer_compiled',  -- lua
-            'target',           -- rust
+            "node_modules",     -- npm
+            "packer_compiled",  -- lua
+            "target",           -- rust
           },
-          sorting_strategy='ascending',
+          sorting_strategy="ascending",
           layout_config = {
-            prompt_position = 'top'
+            prompt_position = "top"
           }
         }
-      }
-      require('telescope').load_extension('fzf')
+      })
+      require("telescope").load_extension("fzy_native")
     end
-  }
+  },
 
   -- Harpoon
-  use { 'ThePrimeagen/harpoon',
-    requires = {{'nvim-lua/plenary.nvim'}}
-  }
+  { "ThePrimeagen/harpoon",
+    dependencies = {{"nvim-lua/plenary.nvim"}}
+  },
 
   -- Treesitter
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
-  use 'nvim-treesitter/nvim-treesitter-textobjects'
-  use 'nvim-treesitter/nvim-treesitter-context'
-  use 'nvim-treesitter/playground'
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  "nvim-treesitter/nvim-treesitter-textobjects",
+  "nvim-treesitter/nvim-treesitter-context",
+  "nvim-treesitter/playground",
 
   -- Completion
-  use {
-    'VonHeikemen/lsp-zero.nvim',
-    requires = {
+  {
+    "VonHeikemen/lsp-zero.nvim",
+    dependencies = {
       -- LSP Support
-      {'neovim/nvim-lspconfig'},
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
+      {"neovim/nvim-lspconfig"},
+      {"williamboman/mason.nvim"},
+      {"williamboman/mason-lspconfig.nvim"},
 
       -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
-      {'hrsh7th/cmp-buffer'},
-      {'hrsh7th/cmp-path'},
-      {'saadparwaiz1/cmp_luasnip'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'hrsh7th/cmp-nvim-lua'},
+      {"hrsh7th/nvim-cmp"},
+      {"hrsh7th/cmp-buffer"},
+      {"hrsh7th/cmp-path"},
+      {"saadparwaiz1/cmp_luasnip"},
+      {"hrsh7th/cmp-nvim-lsp"},
+      {"hrsh7th/cmp-nvim-lua"},
 
       -- Snippets
-      {'L3MON4D3/LuaSnip'},
-      {'rafamadriz/friendly-snippets'},
+      {"L3MON4D3/LuaSnip"},
+      {"rafamadriz/friendly-snippets"},
     }
-  }
+  },
 
   -- Smooth Scroll
-  -- use { 'karb94/neoscroll.nvim',
+  -- { "karb94/neoscroll.nvim",
   --   config = function ()
-  --     require('neoscroll').setup({
-  --       mappings = { '<C-d>', '<C-u>' },
+  --     require("neoscroll").setup({
+  --       mappings = { "<C-d>", "<C-u>" },
   --     })
-  --     require('neoscroll.config').set_mappings({
-  --       ['<C-d>'] = { 'scroll', {'vim.wo.scroll', 'true', '50', nil} },
-  --       ['<C-u>'] = { 'scroll', {'-vim.wo.scroll', 'true', '50', nil} }
+  --     require("neoscroll.config").set_mappings({
+  --       ["<C-d>"] = { "scroll", {"vim.wo.scroll", "true", "50", nil} },
+  --       ["<C-u>"] = { "scroll", {"-vim.wo.scroll", "true", "50", nil} }
   --     })
   --
   --   end
-  -- }
+  -- },
+})
 
-  if packer_bootstrap then
-    require('packer').sync()
-  end
-end)
-
-require('impatient')
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -181,30 +181,28 @@ local o  = vim.o
 local wo = vim.wo
 -- local bo = vim.bo
 
--- global options
+-- buffer-scoped and window-scoped options
 o.hlsearch = false
 o.ignorecase = true
 o.smartcase = true
 o.scrolloff = 999
 o.sidescrolloff = 10
-o.completeopt = 'menuone,noselect'
-o.inccommand = 'split'
-
--- window-local options
-wo.number = true
--- wo.relativenumber = true
-wo.wrap = false
-
--- buffer-local options
+o.completeopt = "menuone,noselect"
+o.inccommand = "split"
 o.tabstop = 2
 o.shiftwidth = 2
 o.expandtab = true
 o.undofile = true
 
--- Yank Highlight
-local yank_highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
+-- window-scoped options
+wo.number = true
+-- wo.relativenumber = true
+wo.wrap = false
 
-vim.api.nvim_create_autocmd('TextYankPost', {
+-- Yank Highlight
+local yank_highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+
+vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function() vim.highlight.on_yank({ timeout = 50 }) end,
   group = yank_highlight_group,
 })
@@ -225,57 +223,57 @@ local map = vim.keymap.set
 local options = { noremap = true }
 
 -- Leader
-map('n', '<Space>', '', {})
-vim.g.mapleader = ' '
+map("n", "<Space>", "", {})
+vim.g.mapleader = " "
 
 -- Window Navigation
-map('n', '<C-j>', '<C-w>j', options)
-map('n', '<C-k>', '<C-w>k', options)
-map('n', '<C-h>', '<C-w>h', options)
-map('n', '<C-l>', '<C-w>l', options)
-map('n', '<C-c>', '<C-w>c', options)
+map("n", "<C-j>", "<C-w>j", options)
+map("n", "<C-k>", "<C-w>k", options)
+map("n", "<C-h>", "<C-w>h", options)
+map("n", "<C-l>", "<C-w>l", options)
+map("n", "<C-c>", "<C-w>c", options)
 
 -- Tab Navigation
-map('n', 'H', 'gT', options)
-map('n', 'L', 'gt', options)
+map("n", "H", "gT", options)
+map("n", "L", "gt", options)
 
 -- QuickFix Navigation
-map('n', ']q', ':cnext <CR>', options)
-map('n', '[q', ':cprev <CR>', options)
+map("n", "]q", ":cnext <CR>", options)
+map("n", "[q", ":cprev <CR>", options)
 
 -- Yank to clipboard
-map({ 'n', 'v' }, '<leader>y', '"+y', options)
+map({ "n", "v" }, "<leader>y", '"+y', options)
 
 -- Help
-map('v', '<leader>h', 'y:vert help <C-r>" <CR>', options)
+map("v", "<leader>h", 'y:vert help <C-r>" <CR>', options)
 
 -- Source File
-map('n', '<leader>%', '<cmd>source % <CR>', options)
+map("n", "<leader>%", "<cmd>source % <CR>", options)
 
 -- Blank line
-map('n', '<leader>o', 'mmo<Esc>`m', options)
-map('n', '<leader>O', 'mmO<Esc>`m', options)
+map("n", "<leader>o", "mmo<Esc>`m", options)
+map("n", "<leader>O", "mmO<Esc>`m", options)
 
 -- Paste Yanked
-map({ 'n', 'v' }, '<leader>p', '"0p', options)
-map({ 'n', 'v' }, '<leader>P', '"0P', options)
+map({ "n", "v" }, "<leader>p", '"0p', options)
+map({ "n", "v" }, "<leader>P", '"0P', options)
 
 -- Find and Replace Selection
-map('v', '<leader>s', '"vy:%s/<C-r>v//gc<left><left><left>', options)
+map("v", "<leader>s", '"vy:%s/<C-r>v//gc<left><left><left>', options)
 
 -- Move Text
-map('v', 'J', ":m '>+1 <CR> gv= gv", options)
-map('v', 'K', ":m '<-2 <CR> gv= gv", options)
+map("v", "J", ":m '>+1 <CR> gv= gv", options)
+map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
 -- Alternate File
-map('n', "<leader>'", ':e # <CR>', options)
+map("n", "<leader>'", ":e # <CR>", options)
 
 -- Terminal
-map('t', '<Esc>', '<C-\\><C-n>', options)
+map("t", "<Esc>", "<C-\\><C-n>", options)
 
 -- Neogit
-local neogit = require('neogit')
-local diffview = require('diffview')
+local neogit = require("neogit")
+local diffview = require("diffview")
 -- local neogit_diffview = require('neogit.integrations.diffview')
 
 neogit.setup({
@@ -298,141 +296,141 @@ diffview.setup({
   }
 })
 
-map('n', '<leader>gg', neogit.open, options)
+map("n", "<leader>gg", neogit.open, options)
 -- map('n', '<leader>gd', neogit_diffview.open, options)
 
 -- Hop
-local hop = require('hop')
-map({ 'n' }, 's', hop.hint_char1 ,options)
-map({ 'n' }, 'S', hop.hint_lines_skip_whitespace, options)
+local hop = require("hop")
+map({ "n" }, "s", hop.hint_char1 ,options)
+map({ "n" }, "S", hop.hint_lines_skip_whitespace, options)
 
 -- Nvim Tree
-map('n', '<leader>fe', '<cmd>NvimTreeToggle <CR>', options)
+map("n", "<leader>fe", "<cmd>NvimTreeToggle <CR>", options)
 
 -- Telescope
 local telescope_builtin = require('telescope.builtin')
-map('n', '<leader>f.', telescope_builtin.resume, options)
-map('n', '<leader>ff', telescope_builtin.find_files, options)
-map('n', '<leader>fw', telescope_builtin.grep_string, options)
-map('n', '<leader>f/', telescope_builtin.live_grep, options)
-map('n', '<leader>/',  telescope_builtin.current_buffer_fuzzy_find, options)
-map('n', '<leader>fd', telescope_builtin.diagnostics, options)
-map('n', '<leader>fg', telescope_builtin.git_status, options)
-map('n', '<leader>fG', telescope_builtin.git_branches, options)
-map('n', '<leader>fz', telescope_builtin.git_stash, options)
-map('n', '<leader>fb', telescope_builtin.buffers, options)
-map('n', '<leader>fh', telescope_builtin.help_tags, options)
-map('n', '<leader>fm', telescope_builtin.keymaps, options)
-map('n', '<leader>fr', telescope_builtin.lsp_references, options)
-map('n', '<leader>f@', telescope_builtin.lsp_document_symbols, options)
-map('n', '<leader>fts', telescope_builtin.treesitter, options)
+map("n", "<leader>f.", telescope_builtin.resume, options)
+map("n", "<leader>ff", telescope_builtin.find_files, options)
+map("n", "<leader>fw", telescope_builtin.grep_string, options)
+map("n", "<leader>f/", telescope_builtin.live_grep, options)
+map("n", "<leader>/",  telescope_builtin.current_buffer_fuzzy_find, options)
+map("n", "<leader>fd", telescope_builtin.diagnostics, options)
+map("n", "<leader>fg", telescope_builtin.git_status, options)
+map("n", "<leader>fG", telescope_builtin.git_branches, options)
+map("n", "<leader>fz", telescope_builtin.git_stash, options)
+map("n", "<leader>fb", telescope_builtin.buffers, options)
+map("n", "<leader>fh", telescope_builtin.help_tags, options)
+map("n", "<leader>fm", telescope_builtin.keymaps, options)
+map("n", "<leader>fr", telescope_builtin.lsp_references, options)
+map("n", "<leader>f@", telescope_builtin.lsp_document_symbols, options)
+map("n", "<leader>fts", telescope_builtin.treesitter, options)
 
 -- Harpoon
 local harpoon_mark = require('harpoon.mark')
 local harpoon_ui = require('harpoon.ui')
 local harpoon_term = require('harpoon.term')
-map('n', '<leader>h', harpoon_mark.add_file, options)
-map('n', '<leader>H', harpoon_ui.toggle_quick_menu, options)
-map('n', '<leader>j', function() harpoon_ui.nav_file(1) end, options)
-map('n', '<leader>k', function() harpoon_ui.nav_file(2) end, options)
-map('n', '<leader>l', function() harpoon_ui.nav_file(3) end, options)
-map('n', '<leader>;', function() harpoon_ui.nav_file(4) end, options)
-map('n', '<leader>t', function() harpoon_term.gotoTerminal(0) end, options)
+map("n", "<leader>h", harpoon_mark.add_file, options)
+map("n", "<leader>H", harpoon_ui.toggle_quick_menu, options)
+map("n", "<leader>j", function() harpoon_ui.nav_file(1) end, options)
+map("n", "<leader>k", function() harpoon_ui.nav_file(2) end, options)
+map("n", "<leader>l", function() harpoon_ui.nav_file(3) end, options)
+map("n", "<leader>;", function() harpoon_ui.nav_file(4) end, options)
+map("n", "<leader>t", function() harpoon_term.gotoTerminal(0) end, options)
 
-require('gitsigns').setup {
+require("gitsigns").setup {
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
     local gitsigns_options = { noremap = true, buffer = bufnr }
 
     local function git_next_hunk()
-      if vim.wo.diff then return ']c' end
+      if vim.wo.diff then return "]c" end
       vim.schedule(function() gs.next_hunk() end)
-      return '<Ignore>'
+      return "<Ignore>"
     end
 
     local function git_prev_hunk()
-      if vim.wo.diff then return '[c' end
+      if vim.wo.diff then return "[c" end
       vim.schedule(function() gs.prev_hunk() end)
-      return '<Ignore>'
+      return "<Ignore>"
     end
 
     -- navigation
-    map('n', ']g', git_next_hunk, { expr = true })
-    map('n', '<leader>gj', git_next_hunk, { expr = true })
+    map("n", "]g", git_next_hunk, { expr = true })
+    map("n", "<leader>gj", git_next_hunk, { expr = true })
 
-    map('n', '[g', git_prev_hunk, { expr = true })
-    map('n', '<leader>gk', git_prev_hunk, { expr = true })
+    map("n", "[g", git_prev_hunk, { expr = true })
+    map("n", "<leader>gk", git_prev_hunk, { expr = true })
 
     -- actions
-    map({ 'n', 'v' }, '<leader>gs', gs.stage_hunk, gitsigns_options)
-    map('n', '<leader>gS', gs.stage_buffer, gitsigns_options)
-    map('n', '<leader>gu', gs.undo_stage_hunk, gitsigns_options)
-    map('n', '<leader>gU', gs.reset_buffer_index, gitsigns_options)
-    map({ 'n', 'v' }, '<leader>gr', gs.reset_hunk, gitsigns_options)
-    map('n', '<leader>gR', gs.reset_buffer, gitsigns_options)
-    map('n', '<leader>gp', gs.preview_hunk, gitsigns_options)
-    map('n', '<leader>gb', function() gs.blame_line { full = true } end, gitsigns_options)
+    map({ "n", "v" }, "<leader>gs", gs.stage_hunk, gitsigns_options)
+    map("n", "<leader>gS", gs.stage_buffer, gitsigns_options)
+    map("n", "<leader>gu", gs.undo_stage_hunk, gitsigns_options)
+    map("n", "<leader>gU", gs.reset_buffer_index, gitsigns_options)
+    map({ "n", "v" }, "<leader>gr", gs.reset_hunk, gitsigns_options)
+    map("n", "<leader>gR", gs.reset_buffer, gitsigns_options)
+    map("n", "<leader>gp", gs.preview_hunk, gitsigns_options)
+    map("n", "<leader>gb", function() gs.blame_line { full = true } end, gitsigns_options)
 
     -- text objects
-    map({ 'o', 'x' }, 'ig', ':<C-U>Gitsigns select_hunk<CR>', gitsigns_options)
+    map({ "o", "x" }, "ig", ":<C-U>Gitsigns select_hunk<CR>", gitsigns_options)
   end
 }
 
 ----------------------lsp----------------------
-local lsp = require('lsp-zero')
+local lsp = require("lsp-zero")
 
-lsp.preset('recommended')
+lsp.preset("recommended")
 
 lsp.set_preferences({
   set_lsp_keymaps = false,
 })
 
 lsp.ensure_installed({
-  'cssls',
-  'eslint',
-  'graphql',
-  'html',
-  'jsonls',
-  'rust_analyzer',
-  'sumneko_lua',
-  'tailwindcss',
-  'tsserver',
-  'yamlls',
+  "cssls",
+  "eslint",
+  "graphql",
+  "html",
+  "jsonls",
+  "rust_analyzer",
+  "sumneko_lua",
+  "tailwindcss",
+  "tsserver",
+  "yamlls",
 })
 
 -- Completion
-local cmp = require('cmp')
+local cmp = require("cmp")
 
 lsp.setup_nvim_cmp({
   mapping = lsp.defaults.cmp_mappings({
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
   }),
 })
 
 lsp.on_attach(function(client, bufnr)
   local lsp_options = { noremap = true, silent = true, buffer = bufnr }
 
-  map('n', 'gd', vim.lsp.buf.definition, lsp_options)
-  map('n', 'gD', vim.lsp.buf.declaration, lsp_options)
-  map('n', 'gr', vim.lsp.buf.references, lsp_options)
-  map('n', 'gI', vim.lsp.buf.implementation, lsp_options)
+  map("n", "gd", vim.lsp.buf.definition, lsp_options)
+  map("n", "gD", vim.lsp.buf.declaration, lsp_options)
+  map("n", "gr", vim.lsp.buf.references, lsp_options)
+  map("n", "gI", vim.lsp.buf.implementation, lsp_options)
 
-  map('n', ']d',         vim.diagnostic.goto_next, lsp_options)
-  map('n', '<leader>dj', vim.diagnostic.goto_next, lsp_options)
-  map('n', '[d',         vim.diagnostic.goto_prev, lsp_options)
-  map('n', '<leader>dk', vim.diagnostic.goto_prev, lsp_options)
-  map('n', '<leader>dl', vim.diagnostic.open_float, lsp_options)
+  map("n", "]d",         vim.diagnostic.goto_next, lsp_options)
+  map("n", "<leader>dj", vim.diagnostic.goto_next, lsp_options)
+  map("n", "[d",         vim.diagnostic.goto_prev, lsp_options)
+  map("n", "<leader>dk", vim.diagnostic.goto_prev, lsp_options)
+  map("n", "<leader>dl", vim.diagnostic.open_float, lsp_options)
 
-  map('n', '<leader>ca', vim.lsp.buf.code_action, lsp_options)
-  map('n', '<leader>rn', vim.lsp.buf.rename, lsp_options)
-  map('n', '<leader>=',  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
+  map("n", "<leader>ca", vim.lsp.buf.code_action, lsp_options)
+  map("n", "<leader>rn", vim.lsp.buf.rename, lsp_options)
+  map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
 
-  map('n', 'K', vim.lsp.buf.hover, lsp_options)
-  map('n', '<leader>D', vim.lsp.buf.type_definition, lsp_options)
+  map("n", "K", vim.lsp.buf.hover, lsp_options)
+  map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
 end)
 
 lsp.nvim_workspace()
@@ -453,9 +451,9 @@ lsp.setup()
 -- )
 
 ----------------------treesitter----------------------
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = 'all', -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ignore_install = { 'phpdoc' }, -- List of parsers to ignore installing
+require"nvim-treesitter.configs".setup {
+  ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ignore_install = { "phpdoc" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,              -- false will disable the whole extension
     additional_vim_regex_highlighting = true,
@@ -466,9 +464,9 @@ require'nvim-treesitter.configs'.setup {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = '<leader>v',
-      node_incremental = '+',
-      node_decremental = '-',
+      init_selection = "<leader>v",
+      node_incremental = "+",
+      node_decremental = "-",
     }
   },
   autotag = {
@@ -577,14 +575,14 @@ require'nvim-treesitter.configs'.setup {
 }
 
 ----------------------snippets----------------------
-local luasnip = require('luasnip')
+local luasnip = require("luasnip")
 
 luasnip.config.set_config({
   history = true,
-  updateevents = 'TextChanged,TextChangedI',
+  updateevents = "TextChanged,TextChangedI",
 })
 
-map({ 'i', 's' }, '<C-j>', function()
+map({ "i", "s" }, "<C-j>", function()
     if luasnip.expand_or_jumpable() then
       luasnip.expand_or_jump()
     end
@@ -592,7 +590,7 @@ map({ 'i', 's' }, '<C-j>', function()
   { silent = true }
 )
 
-map({ 'i', 's' }, '<C-k>', function()
+map({ "i", "s" }, "<C-k>", function()
     if luasnip.jumpable(-1) then
       luasnip.jump(-1)
     end
@@ -600,7 +598,7 @@ map({ 'i', 's' }, '<C-k>', function()
   { silent = true }
 )
 
-map({ 'i', 's' }, '<C-l>', function()
+map({ "i", "s" }, "<C-l>", function()
     if luasnip.choice_active() then
       luasnip.change_choice(1)
     end
@@ -625,6 +623,6 @@ local fmta = require("luasnip.extras.fmt").fmta
 local types = require("luasnip.util.types")
 local conds = require("luasnip.extras.expand_conditions")
 
--- luasnip.add_snippets('all', {
+-- luasnip.add_snippets("all", {
 -- })
 
