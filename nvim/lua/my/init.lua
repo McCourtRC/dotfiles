@@ -31,16 +31,12 @@ require('lazy').setup({
   -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'}
 
   -- Commentary
-  { "numToStr/Comment.nvim", 
-    config =  function ()
-      require("Comment").setup({})
-    end
+  { "numToStr/Comment.nvim",
+    config =  {},
   },
 
   { "kylechui/nvim-surround",
-    config = function ()
-      require("nvim-surround").setup({})
-    end
+    config = {},
   },
 
   -- Plenary
@@ -70,16 +66,14 @@ require('lazy').setup({
   },
 
   { "kyazdani42/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
-    config = function()
-      require("nvim-web-devicons").setup {
-        default = true
-      }
-    end
+    config = {
+      default = true
+    },
   },
 
   -- Autopairs
   { "windwp/nvim-autopairs",
-    config = function() require("nvim-autopairs").setup{} end
+    config = {},
   },
 
   -- HTML tags
@@ -88,17 +82,13 @@ require('lazy').setup({
   -- Sneak
   { "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
-    config = function()
-      require("hop").setup { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 }
-    end
+    config = { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 },
   },
 
   -- File Tree
   { "kyazdani42/nvim-tree.lua",
     dependencies = "kyazdani42/nvim-web-devicons",
-    config = function ()
-      require("nvim-tree").setup()
-    end
+    config = {},
   },
 
   -- Telescope
