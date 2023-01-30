@@ -19,9 +19,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  -- lua docs
-  'milisims/nvim-luaref',
-
   -- Color Schemes
   { "catppuccin/nvim", name = "catppuccin" },
   -- 'EdenEast/nightfox.nvim'
@@ -32,11 +29,11 @@ require('lazy').setup({
 
   -- Commentary
   { "numToStr/Comment.nvim",
-    config =  {},
+    opts =  {},
   },
 
   { "kylechui/nvim-surround",
-    config = {},
+    opts = {},
   },
 
   -- Plenary
@@ -66,14 +63,14 @@ require('lazy').setup({
   },
 
   { "kyazdani42/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
-    config = {
+    opts = {
       default = true
     },
   },
 
   -- Autopairs
   { "windwp/nvim-autopairs",
-    config = {},
+    opts = {},
   },
 
   -- HTML tags
@@ -82,13 +79,13 @@ require('lazy').setup({
   -- Sneak
   { "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
-    config = { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 },
+    opts = { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 },
   },
 
   -- File Tree
   { "kyazdani42/nvim-tree.lua",
     dependencies = "kyazdani42/nvim-web-devicons",
-    config = {},
+    opts = {},
   },
 
   -- Telescope
