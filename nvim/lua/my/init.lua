@@ -329,25 +329,6 @@ require("gitsigns").setup {
     local gs = package.loaded.gitsigns
     local gitsigns_options = { noremap = true, buffer = bufnr }
 
-    local function git_next_hunk()
-      if vim.wo.diff then return "]c" end
-      vim.schedule(function() gs.next_hunk() end)
-      return "<Ignore>"
-    end
-
-    local function git_prev_hunk()
-      if vim.wo.diff then return "[c" end
-      vim.schedule(function() gs.prev_hunk() end)
-      return "<Ignore>"
-    end
-
-    -- navigation
-    map("n", "]g", git_next_hunk, { expr = true })
-    map("n", "<leader>gj", git_next_hunk, { expr = true })
-
-    map("n", "[g", git_prev_hunk, { expr = true })
-    map("n", "<leader>gk", git_prev_hunk, { expr = true })
-
     -- actions
     map({ "n", "v" }, "<leader>gs", gs.stage_hunk, gitsigns_options)
     map("n", "<leader>gS", gs.stage_buffer, gitsigns_options)
@@ -359,6 +340,15 @@ require("gitsigns").setup {
     map("n", "<leader>gb", function() gs.blame_line { full = true } end, gitsigns_options)
 
     -- text objects
+    ---- navigation
+    local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+    local next_hunk_repeat, prev_hunk_repeat = ts_repeat_move.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
+    map({ "n", "x", "o" }, "]g", next_hunk_repeat)
+    map({ "n", "x", "o" }, "<leader>gj", next_hunk_repeat)
+    map({ "n", "x", "o" }, "[g", prev_hunk_repeat)
+    map({ "n", "x", "o" }, "<leader>gk", prev_hunk_repeat)
+
+    ---- selction
     map({ "o", "x" }, "ig", ":<C-U>Gitsigns select_hunk<CR>", gitsigns_options)
   end
 }
@@ -379,7 +369,7 @@ lsp.ensure_installed({
   "html",
   "jsonls",
   "rust_analyzer",
-  "sumneko_lua",
+  -- "sumneko_lua",
   "tailwindcss",
   "tsserver",
   "yamlls",
@@ -406,10 +396,12 @@ lsp.on_attach(function(client, bufnr)
   map("n", "gr", vim.lsp.buf.references, lsp_options)
   map("n", "gI", vim.lsp.buf.implementation, lsp_options)
 
-  map("n", "]d",         vim.diagnostic.goto_next, lsp_options)
-  map("n", "<leader>dj", vim.diagnostic.goto_next, lsp_options)
-  map("n", "[d",         vim.diagnostic.goto_prev, lsp_options)
-  map("n", "<leader>dk", vim.diagnostic.goto_prev, lsp_options)
+  local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+  local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
+  map("n", "]d",         goto_next, lsp_options)
+  map("n", "<leader>dj", goto_next, lsp_options)
+  map("n", "[d",         goto_prev, lsp_options)
+  map("n", "<leader>dk", goto_prev, lsp_options)
   map("n", "<leader>dl", vim.diagnostic.open_float, lsp_options)
 
   map("n", "<leader>ca", vim.lsp.buf.code_action, lsp_options)
@@ -560,6 +552,16 @@ require"nvim-treesitter.configs".setup {
     },
   },
 }
+
+local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+
+map({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
+map({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
+
+map({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f)
+map({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
+map({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)
+map({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T)
 
 ----------------------snippets----------------------
 local luasnip = require("luasnip")
