@@ -163,7 +163,6 @@ vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 
 ----------------------config----------------------
-
 local o  = vim.o
 local wo = vim.wo
 -- local bo = vim.bo
@@ -298,6 +297,7 @@ map("n", "<leader>fe", "<cmd>NvimTreeToggle <CR>", options)
 local telescope_builtin = require('telescope.builtin')
 map("n", "<leader>f.", telescope_builtin.resume, options)
 map("n", "<leader>ff", telescope_builtin.find_files, options)
+map("n", "<leader>fo", telescope_builtin.oldfiles, options)
 map("n", "<leader>fw", telescope_builtin.grep_string, options)
 map("n", "<leader>f/", telescope_builtin.live_grep, options)
 map("n", "<leader>/",  telescope_builtin.current_buffer_fuzzy_find, options)
@@ -311,6 +311,7 @@ map("n", "<leader>fm", telescope_builtin.keymaps, options)
 map("n", "<leader>fr", telescope_builtin.lsp_references, options)
 map("n", "<leader>f@", telescope_builtin.lsp_document_symbols, options)
 map("n", "<leader>fts", telescope_builtin.treesitter, options)
+map("n", "<leader>cw", telescope_builtin.spell_suggest, options)
 
 -- Harpoon
 local harpoon_mark = require('harpoon.mark')
