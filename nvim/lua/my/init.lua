@@ -40,13 +40,9 @@ require('lazy').setup({
   "nvim-lua/plenary.nvim",
 
   -- Neogit
-  { "sindrets/diffview.nvim",
-    dependencies = "nvim-lua/plenary.nvim",
-  },
   { "TimUntersberger/neogit",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "sindrets/diffview.nvim",
     },
   },
 
@@ -260,31 +256,10 @@ map("t", "<Esc>", "<C-\\><C-n>", options)
 
 -- Neogit
 local neogit = require("neogit")
-local diffview = require("diffview")
--- local neogit_diffview = require('neogit.integrations.diffview')
 
 neogit.setup({
   auto_refresh = false,
-  -- integrations = {
-  --   diffview = true,
-  -- }
 })
-
-diffview.setup({
-  key_bindings = {
-    view = {
-      -- ['q'] = neogit_diffview.diffview_mappings.close,
-      -- ['<ESC>'] = neogit_diffview.diffview_mappings.close,
-    },
-    file_panel = {
-      -- ['q'] = neogit_diffview.diffview_mappings.close,
-      -- ['<ESC>'] = neogit_diffview.diffview_mappings.close,
-    }
-  }
-})
-
-map("n", "<leader>gg", neogit.open, options)
--- map('n', '<leader>gd', neogit_diffview.open, options)
 
 -- Hop
 local hop = require("hop")
@@ -339,7 +314,9 @@ require("gitsigns").setup {
     map({ "n", "v" }, "<leader>gr", gs.reset_hunk, gitsigns_options)
     map("n", "<leader>gR", gs.reset_buffer, gitsigns_options)
     map("n", "<leader>gp", gs.preview_hunk, gitsigns_options)
-    map("n", "<leader>gb", function() gs.blame_line { full = true } end, gitsigns_options)
+    map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, gitsigns_options)
+    map("n", "<leader>gd", gs.diffthis)
+    map("n", "<leader>gD", function() gs.diffthis("~") end, gitsigns_options)
 
     -- text objects
     ---- navigation
