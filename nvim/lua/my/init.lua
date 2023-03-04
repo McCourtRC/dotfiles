@@ -179,6 +179,7 @@ o.tabstop = 2
 o.shiftwidth = 2
 o.expandtab = true
 o.undofile = true
+o.equalalways = true
 
 -- window-scoped options
 wo.number = true
