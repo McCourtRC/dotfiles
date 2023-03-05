@@ -27,6 +27,8 @@ require('lazy').setup({
   -- { 'Everblush/everblush.nvim', name = 'everblush' }
   -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'}
 
+  "folke/zen-mode.nvim",
+
   -- Commentary
   { "numToStr/Comment.nvim",
     opts =  {},
@@ -254,12 +256,18 @@ map("n", "<leader>'", ":e # <CR>", options)
 -- Terminal
 map("t", "<Esc>", "<C-\\><C-n>", options)
 
+-- Zen Mode
+local zen_mode = require("zen-mode")
+map("n", "<leader>z", zen_mode.toggle, options)
+
 -- Neogit
 local neogit = require("neogit")
 
 neogit.setup({
   auto_refresh = false,
 })
+
+map("n", "<leader>gg", neogit.open, options)
 
 -- Hop
 local hop = require("hop")
