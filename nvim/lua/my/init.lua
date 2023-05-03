@@ -38,6 +38,17 @@ require('lazy').setup({
     opts = {},
   },
 
+  {
+    'Wansmer/treesj',
+    keys = { '<leader>J' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('treesj').setup({
+        use_default_keymaps = false,
+      })
+    end,
+  },
+
   -- Plenary
   "nvim-lua/plenary.nvim",
 
@@ -250,8 +261,8 @@ map("v", "<leader>s", '"vy:%s/<C-r>v//gc<left><left><left>', options)
 map("v", "J", ":m '>+1 <CR> gv= gv", options)
 map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
--- Alternate File
-map("n", "<leader>'", ":e # <CR>", options)
+-- Smart Join
+map("n", "<leader>J", require("treesj").toggle)
 
 -- Terminal
 map("t", "<Esc>", "<C-\\><C-n>", options)
@@ -309,6 +320,10 @@ map("n", "<leader>l", function() harpoon_ui.nav_file(3) end, options)
 map("n", "<leader>;", function() harpoon_ui.nav_file(4) end, options)
 map("n", "<leader>t", function() harpoon_term.gotoTerminal(0) end, options)
 
+-- Alternate File
+map("n", "<leader>'", ":e # <CR>", options)
+
+-- gitsigns
 require("gitsigns").setup {
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
