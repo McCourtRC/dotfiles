@@ -53,7 +53,7 @@ require('lazy').setup({
   "nvim-lua/plenary.nvim",
 
   -- Neogit
-  { "TimUntersberger/neogit",
+  { "NeogitOrg/neogit",
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
