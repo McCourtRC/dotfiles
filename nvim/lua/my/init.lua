@@ -21,11 +21,11 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- Color Schemes
   { "catppuccin/nvim", name = "catppuccin" },
-  -- 'EdenEast/nightfox.nvim'
-  -- 'folke/tokyonight.nvim'
-  -- 'Mofiqul/dracula.nvim'
-  -- { 'Everblush/everblush.nvim', name = 'everblush' }
-  -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'}
+  -- 'EdenEast/nightfox.nvim',
+  -- 'folke/tokyonight.nvim',
+  -- 'Mofiqul/dracula.nvim',
+  -- { 'Everblush/everblush.nvim', name = 'everblush' },
+  -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'},
 
   "folke/zen-mode.nvim",
 
