@@ -195,6 +195,13 @@ wo.number = true
 -- wo.relativenumber = true
 wo.wrap = false
 
+-- markdown settings
+vim.api.nvim_exec([[
+  autocmd FileType markdown setlocal wrap
+  autocmd FileType markdown setlocal linebreak
+]], false)
+
+
 -- Yank Highlight
 local yank_highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 
@@ -269,7 +276,11 @@ map("t", "<Esc>", "<C-\\><C-n>", options)
 
 -- Zen Mode
 local zen_mode = require("zen-mode")
-map("n", "<leader>z", zen_mode.toggle, options)
+map("n", "<leader>z", function() zen_mode.toggle({
+  window = {
+    width = 80,
+  },
+}) end, options)
 
 -- Neogit
 local neogit = require("neogit")
