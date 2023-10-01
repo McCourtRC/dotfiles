@@ -153,6 +153,17 @@ require('lazy').setup({
     }
   },
 
+  {
+    "folke/trouble.nvim",
+    config = function()
+      require("trouble").setup {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end
+  },
+
   -- Smooth Scroll
   -- { "karb94/neoscroll.nvim",
   --   config = function ()
@@ -331,6 +342,9 @@ map("n", "<leader>k", function() harpoon_ui.nav_file(2) end, options)
 map("n", "<leader>l", function() harpoon_ui.nav_file(3) end, options)
 map("n", "<leader>;", function() harpoon_ui.nav_file(4) end, options)
 map("n", "<leader>t", function() harpoon_term.gotoTerminal(0) end, options)
+
+-- debug
+map("n", "<leader>dd", function() require("trouble").open() end)
 
 -- Alternate File
 map("n", "<leader>'", ":e # <CR>", options)
