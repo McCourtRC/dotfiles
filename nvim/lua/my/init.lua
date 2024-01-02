@@ -91,6 +91,7 @@ require('lazy').setup({
   -- Sneak
   { 'smoka7/hop.nvim',
     version = "*",
+    opts = {},
   },
 
   -- File Tree
