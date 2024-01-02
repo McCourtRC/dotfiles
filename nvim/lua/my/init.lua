@@ -282,7 +282,7 @@ map({ "n", "v" }, "<leader>p", '"0p', options)
 map({ "n", "v" }, "<leader>P", '"0P', options)
 
 -- Find and Replace Selection
-map("v", "<leader>s", '"vy:%s/<C-r>v//gc<left><left><left>', options)
+map("v", "<leader>s", '"vy:%s/<C-r>v/', options)
 
 -- Move Text
 map("v", "J", ":m '>+1 <CR> gv= gv", options)
