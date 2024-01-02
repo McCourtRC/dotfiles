@@ -89,9 +89,8 @@ require('lazy').setup({
   "windwp/nvim-ts-autotag",
 
   -- Sneak
-  { "phaazon/hop.nvim",
-    branch = "v2", -- optional but strongly recommended
-    opts = { keys = "etovxqpdygfblzhckisuran", term_seq_bias = 0.5 },
+  { 'smoka7/hop.nvim',
+    version = "*",
   },
 
   -- File Tree
