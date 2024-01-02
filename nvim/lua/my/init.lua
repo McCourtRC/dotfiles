@@ -452,20 +452,6 @@ end)
 lsp.nvim_workspace()
 lsp.setup()
 
--- Lua Snip
--- "nvim-ts-autotag" setting to prevent bad diagnostics in {j,t}sx
--- vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
---   vim.lsp.diagnostic.on_publish_diagnostics,
---   {
---     underline = true,
---     virtual_text = {
---       spacing = 5,
---       severity_limit = 'Warning',
---     },
---     update_in_insert = true,
---   }
--- )
-
 ----------------------treesitter----------------------
 require"nvim-treesitter.configs".setup {
   -- ensure_installed = { "" },
