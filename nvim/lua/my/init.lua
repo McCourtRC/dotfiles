@@ -345,14 +345,12 @@ map("n", "<leader>cw", telescope_builtin.spell_suggest, options)
 -- Harpoon
 local harpoon_mark = require('harpoon.mark')
 local harpoon_ui = require('harpoon.ui')
-local harpoon_term = require('harpoon.term')
 map("n", "<leader>h", harpoon_mark.add_file, options)
 map("n", "<leader>H", harpoon_ui.toggle_quick_menu, options)
 map("n", "<leader>j", function() harpoon_ui.nav_file(1) end, options)
 map("n", "<leader>k", function() harpoon_ui.nav_file(2) end, options)
 map("n", "<leader>l", function() harpoon_ui.nav_file(3) end, options)
 map("n", "<leader>;", function() harpoon_ui.nav_file(4) end, options)
-map("n", "<leader>t", function() harpoon_term.gotoTerminal(0) end, options)
 
 -- debug
 map("n", "<leader>dd", function() require("trouble").open() end)
