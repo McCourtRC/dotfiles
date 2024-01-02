@@ -291,9 +291,6 @@ map("v", "K", ":m '<-2 <CR> gv= gv", options)
 -- Smart Join
 map("n", "<leader>J", require("treesj").toggle)
 
--- Terminal
-map("t", "<Esc>", "<C-\\><C-n>", options)
-
 -- Zen Mode
 local zen_mode = require("zen-mode")
 map("n", "<leader>z", function() zen_mode.toggle({
