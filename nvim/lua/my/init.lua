@@ -19,6 +19,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- Plenary
+  "nvim-lua/plenary.nvim",
+
   -- Color Schemes
   { "catppuccin/nvim", name = "catppuccin" },
   -- 'EdenEast/nightfox.nvim',
@@ -32,10 +35,12 @@ require('lazy').setup({
   -- Commentary
   { "numToStr/Comment.nvim",
     opts =  {},
+    lazy = false,
   },
 
   { "kylechui/nvim-surround",
     opts = {},
+    event = "VeryLazy",
   },
 
   {
@@ -48,9 +53,6 @@ require('lazy').setup({
       })
     end,
   },
-
-  -- Plenary
-  "nvim-lua/plenary.nvim",
 
   -- Neogit
   { "NeogitOrg/neogit",
