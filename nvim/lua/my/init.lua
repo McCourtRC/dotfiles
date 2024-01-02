@@ -311,7 +311,7 @@ map("n", "<leader>gg", neogit.open, options)
 
 -- Hop
 local hop = require("hop")
-map({ "n" }, "s", hop.hint_char1 ,options)
+map({ "n" }, "s", hop.hint_char1, options)
 map({ "n" }, "S", require("hop-treesitter").hint_nodes, options)
 
 -- Nvim Tree
