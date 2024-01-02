@@ -69,15 +69,15 @@ require('lazy').setup({
     }
   },
 
-  -- Status Line
-  { "nvim-lualine/lualine.nvim",
-    dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
-  },
-
-  { "kyazdani42/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
+  { "nvim-tree/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
     opts = {
       default = true
     },
+  },
+
+  -- Status Line
+  { "nvim-lualine/lualine.nvim",
+    dependencies = {"nvim-tree/nvim-web-devicons"},
   },
 
   -- Autopairs
