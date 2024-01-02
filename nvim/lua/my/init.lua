@@ -94,9 +94,16 @@ require('lazy').setup({
   },
 
   -- File Tree
-  { "kyazdani42/nvim-tree.lua",
-    dependencies = "kyazdani42/nvim-web-devicons",
+  { "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {},
+  },
+  {
+    'stevearc/oil.nvim',
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("oil").setup({})
+    end
   },
 
   -- Telescope
@@ -307,10 +314,12 @@ map("n", "<leader>gg", neogit.open, options)
 -- Hop
 local hop = require("hop")
 map({ "n" }, "s", hop.hint_char1 ,options)
-map({ "n" }, "S", hop.hint_lines_skip_whitespace, options)
+map({ "n" }, "S", require("hop-treesitter").hint_nodes, options)
 
 -- Nvim Tree
-map("n", "<leader>fe", "<cmd>NvimTreeToggle <CR>", options)
+local oil = require("oil")
+map("n", "<leader>fe", oil.toggle_float, options)
+map("n", "<leader>ft", "<cmd>NvimTreeToggle <CR>", options)
 
 -- Telescope
 local telescope_builtin = require('telescope.builtin')
@@ -330,7 +339,7 @@ map("n", "<leader>fh", telescope_builtin.help_tags, options)
 map("n", "<leader>fm", telescope_builtin.keymaps, options)
 map("n", "<leader>fr", telescope_builtin.lsp_references, options)
 map("n", "<leader>f@", telescope_builtin.lsp_document_symbols, options)
-map("n", "<leader>fts", telescope_builtin.treesitter, options)
+map("n", "<leader>fs", telescope_builtin.treesitter, options)
 map("n", "<leader>cw", telescope_builtin.spell_suggest, options)
 
 -- Harpoon
