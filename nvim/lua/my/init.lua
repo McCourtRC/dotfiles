@@ -234,6 +234,9 @@ require('lazy').setup({
   "nvim-treesitter/nvim-treesitter-context",
   "nvim-treesitter/playground",
 
+  -- Loading Status
+  { "j-hui/fidget.nvim", opts = {} },
+
   -- Completion
   {
     "VonHeikemen/lsp-zero.nvim",
