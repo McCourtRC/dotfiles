@@ -3,6 +3,13 @@
 ----------------------wip----------------------
 -- require('extract').setup()
 
+local map = vim.keymap.set
+local options = { noremap = true }
+
+-- Leader
+map("n", "<Space>", "", {})
+vim.g.mapleader = " "
+
 ----------------------plugins----------------------
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -23,14 +30,30 @@ require('lazy').setup({
   "nvim-lua/plenary.nvim",
 
   -- Color Schemes
-  { "catppuccin/nvim", name = "catppuccin" },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    opts = {
+      flavour = "macchiato" -- latte, frappe, macchiato, mocha
+    },
+  },
   -- 'EdenEast/nightfox.nvim',
   -- 'folke/tokyonight.nvim',
   -- 'Mofiqul/dracula.nvim',
   -- { 'Everblush/everblush.nvim', name = 'everblush' },
   -- {'shaunsingh/oxocarbon.nvim', build ='./install.sh'},
 
-  "folke/zen-mode.nvim",
+  { "folke/zen-mode.nvim",
+    opts = {
+      window = {
+        width = 80,
+      },
+    },
+    keys = {
+      { "<leader>z", function() require("zen-mode").toggle() end, desc = "Zen Mode Toggle" },
+    },
+  },
 
   -- Commentary
   { "numToStr/Comment.nvim",
@@ -43,15 +66,14 @@ require('lazy').setup({
     event = "VeryLazy",
   },
 
-  {
-    'Wansmer/treesj',
-    keys = { '<leader>J' },
+  { 'Wansmer/treesj',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    config = function()
-      require('treesj').setup({
-        use_default_keymaps = false,
-      })
-    end,
+    opts = {
+      use_default_keymaps = false,
+    },
+    keys = {
+      { "<leader>J", function() require("treesj").toggle() end, desc = "Smart Join" },
+    },
   },
 
   -- Neogit
@@ -60,13 +82,48 @@ require('lazy').setup({
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim", -- optional
     },
+    opts = {
+      auto_refresh = false,
+    },
+    keys = {
+      { "<leader>gg", function() require("neogit").open() end, desc = "Git UI" }
+    }
   },
 
   -- Git signs
   { "lewis6991/gitsigns.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim"
-    }
+    },
+    opts = {
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+        local gitsigns_options = { noremap = true, buffer = bufnr }
+        -- actions
+        map({ "n", "v" }, "<leader>gs", gs.stage_hunk, gitsigns_options)
+        map("n", "<leader>gS", gs.stage_buffer, gitsigns_options)
+        map("n", "<leader>gu", gs.undo_stage_hunk, gitsigns_options)
+        map("n", "<leader>gU", gs.reset_buffer_index, gitsigns_options)
+        map({ "n", "v" }, "<leader>gr", gs.reset_hunk, gitsigns_options)
+        map("n", "<leader>gR", gs.reset_buffer, gitsigns_options)
+        map("n", "<leader>gp", gs.preview_hunk, gitsigns_options)
+        map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, gitsigns_options)
+        map("n", "<leader>gd", gs.diffthis)
+        map("n", "<leader>gD", function() gs.diffthis("~") end, gitsigns_options)
+
+        -- text objects
+        ---- navigation
+        local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+        local next_hunk_repeat, prev_hunk_repeat = ts_repeat_move.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
+        map({ "n", "x", "o" }, "]g", next_hunk_repeat)
+        map({ "n", "x", "o" }, "<leader>gj", next_hunk_repeat)
+        map({ "n", "x", "o" }, "[g", prev_hunk_repeat)
+        map({ "n", "x", "o" }, "<leader>gk", prev_hunk_repeat)
+
+        ---- selction
+        map({ "o", "x" }, "ig", ":<C-U>Gitsigns select_hunk<CR>", gitsigns_options)
+      end
+    },
   },
 
   { "nvim-tree/nvim-web-devicons",  -- download: https://www.nerdfonts.com/font-downloads
@@ -92,19 +149,27 @@ require('lazy').setup({
   { 'smoka7/hop.nvim',
     version = "*",
     opts = {},
+    keys = {
+      { "s", function() require("hop").hint_char1() end, "Hop Character" },
+      { "S", function() require("hop-treesitter").hint_nodes() end, desc = "Hop Treesitter" },
+    },
   },
 
   -- File Tree
   { "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {},
+    keys = {
+      { "<leader>ft", function() require("nvim-tree.api").tree.toggle() end, desc = "File Tree" },
+    },
   },
   {
     'stevearc/oil.nvim',
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      require("oil").setup({})
-    end
+    opts = {},
+    keys = {
+      { "<leader>fe", function() require("oil").toggle_float() end, desc = "File Editor" }
+    },
   },
 
   -- Telescope
@@ -126,12 +191,41 @@ require('lazy').setup({
         }
       })
       require("telescope").load_extension("fzy_native")
-    end
+    end,
+    keys = {
+      { "<leader>f.", function() require("telescope.builtin").resume() end, desc = "Find Reopen" },
+      { "<leader>ff", function() require("telescope.builtin").find_files() end, desc = "Find Files" },
+      { "<leader>fo", function() require("telescope.builtin").oldfiles() end, desc = "Find Recent Files" },
+      { "<leader>fw", function() require("telescope.builtin").grep_string() end, desc = "Find Word" },
+      { "<leader>fW", function() require("telescope.builtin").grep_string({ search = vim.fn.expand("<cWORD>") }) end, desc = "Find WORD" },
+      { "<leader>f", mode = "v",  function() require("telescope.builtin").grep_string() end, desc = "Find Word Selection" },
+      { "<leader>f/", function() require("telescope.builtin").live_grep() end, desc = "Search Directory" },
+      { "<leader>/",  function() require("telescope.builtin").current_buffer_fuzzy_find() end, desc = "Search Buffer" },
+      { "<leader>fd", function() require("telescope.builtin").diagnostics() end, desc = "Find Diagnostics" },
+      { "<leader>fg", function() require("telescope.builtin").git_status() end, desc = "Find Git Status" },
+      { "<leader>fG", function() require("telescope.builtin").git_branches() end, desc = "Find Git Branches" },
+      { "<leader>fz", function() require("telescope.builtin").git_stash() end, desc = "Find Git Stashes" },
+      { "<leader>fb", function() require("telescope.builtin").buffers() end, desc = "Find Buffers" },
+      { "<leader>fh", function() require("telescope.builtin").help_tags() end, desc = "Search Help" },
+      { "<leader>fm", function() require("telescope.builtin").keymaps() end, desc = "Find Keymaps" },
+      { "<leader>fr", function() require("telescope.builtin").lsp_references() end, desc = "Find LSP References" },
+      { "<leader>f@", function() require("telescope.builtin").lsp_document_symbols() end, desc = "Find Buffer Symbols" },
+      { "<leader>fs", function() require("telescope.builtin").treesitter() end, desc = "Find Treesitter Nodes" },
+      { "<leader>cw", function() require("telescope.builtin").spell_suggest() end, desc = "Change Word Spelling" },
+    }
   },
 
   -- Harpoon
   { "ThePrimeagen/harpoon",
-    dependencies = {{"nvim-lua/plenary.nvim"}}
+    dependencies = {{"nvim-lua/plenary.nvim"}},
+    keys = {
+      { "<leader>h", function() require('harpoon.mark').add_file() end, desc = "Harpoon File" },
+      { "<leader>H", function() require('harpoon.ui').toggle_quick_menu() end, desc = "Harpoon Menu" },
+      { "<leader>j", function() require('harpoon.ui').nav_file(1) end, desc = "Harpoon File 1" },
+      { "<leader>k", function() require('harpoon.ui').nav_file(2) end, desc = "Harpoon File 2" },
+      { "<leader>l", function() require('harpoon.ui').nav_file(3) end, desc = "Harpoon File 3" },
+      { "<leader>;", function() require('harpoon.ui').nav_file(4) end, desc = "Harpoon File 4" },
+    },
   },
 
   -- Treesitter
@@ -165,28 +259,46 @@ require('lazy').setup({
 
   {
     "folke/trouble.nvim",
-    config = function()
-      require("trouble").setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      }
-    end
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = {
+      { "<leader>dd", function() require("trouble").open() end, desc = "Trouble Toggle"},
+    },
+  },
+  -- Debug
+  "mfussenegger/nvim-dap",
+  { "laytan/cloak.nvim",
+    opts = {
+      enabled = true,
+      cloak_character = '*',
+      highlight_group = 'Comment',
+      cloak_length = nil,
+      try_all_patterns = true,
+      patterns = {
+        {
+          file_pattern = '.env*',
+          cloak_pattern = '=.+',
+          replace = nil,
+        },
+      },
+    },
   },
 
-  -- Smooth Scroll
-  -- { "karb94/neoscroll.nvim",
-  --   config = function ()
-  --     require("neoscroll").setup({
-  --       mappings = { "<C-d>", "<C-u>" },
-  --     })
-  --     require("neoscroll.config").set_mappings({
-  --       ["<C-d>"] = { "scroll", {"vim.wo.scroll", "true", "50", nil} },
-  --       ["<C-u>"] = { "scroll", {"-vim.wo.scroll", "true", "50", nil} }
-  --     })
-  --
-  --   end
-  -- },
+--   -- ChatGPT
+--   {
+--     "jackMort/ChatGPT.nvim",
+--     event = "VeryLazy",
+--     config = function()
+--       require("chatgpt").setup({
+--         api_key_cmd = "pass show openai/api/keys/chatgpt.nvim",
+--       })
+--     end,
+--     dependencies = {
+--       "MunifTanjim/nui.nvim",
+--       "nvim-lua/plenary.nvim",
+--       "nvim-telescope/telescope.nvim"
+--   },
+-- }
+
 })
 
 vim.g.loaded = 1
@@ -232,9 +344,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Color Schemes
-require("catppuccin").setup({
-  flavour = "macchiato" -- latte, frappe, macchiato, mocha
-})
 vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme nightfox]]
 -- vim.cmd[[colorscheme tokyonight]]
@@ -243,13 +352,6 @@ vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme oxocarbon]]
 
 ----------------------mappings----------------------
-local map = vim.keymap.set
-local options = { noremap = true }
-
--- Leader
-map("n", "<Space>", "", {})
-vim.g.mapleader = " "
-
 -- Window Navigation
 map("n", "<C-j>", "<C-w>j", options)
 map("n", "<C-k>", "<C-w>k", options)
@@ -289,104 +391,54 @@ map("v", "<leader>s", '"vy:%s/<C-r>v/', options)
 map("v", "J", ":m '>+1 <CR> gv= gv", options)
 map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
--- Smart Join
-map("n", "<leader>J", require("treesj").toggle)
+map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
+map("n", "<leader>m", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
 
--- Zen Mode
-local zen_mode = require("zen-mode")
-map("n", "<leader>z", function() zen_mode.toggle({
-  window = {
-    width = 80,
+local dap = require("dap")
+dap.adapters.lldb = {
+  type = 'executable',
+  command = '/usr/bin/lldb',
+  name = 'lldb',
+}
+dap.configurations.c = {
+  {
+    name = 'Launch',
+    type = 'lldb',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    args = {},
+
+    -- 💀
+    -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+    --
+    --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+    --
+    -- Otherwise you might get the following error:
+    --
+    --    Error on launch: Failed to attach to the target process
+    --
+    -- But you should be aware of the implications:
+    -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+    -- runInTerminal = false,
   },
-}) end, options)
+}
 
--- Neogit
-local neogit = require("neogit")
+-- If you want to use this for Rust and C, add something like this:
 
-neogit.setup({
-  auto_refresh = false,
-})
-
-map("n", "<leader>gg", neogit.open, options)
-
--- Hop
-local hop = require("hop")
-map({ "n" }, "s", hop.hint_char1, options)
-map({ "n" }, "S", require("hop-treesitter").hint_nodes, options)
-
--- Nvim Tree
-local oil = require("oil")
-map("n", "<leader>fe", oil.toggle_float, options)
-map("n", "<leader>ft", "<cmd>NvimTreeToggle <CR>", options)
-
--- Telescope
-local telescope_builtin = require('telescope.builtin')
-map("n", "<leader>f.", telescope_builtin.resume, options)
-map("n", "<leader>ff", telescope_builtin.find_files, options)
-map("n", "<leader>fo", telescope_builtin.oldfiles, options)
-map("n", "<leader>fw", telescope_builtin.grep_string, options)
-map("v", "<leader>f", telescope_builtin.grep_string, options)
-map("n", "<leader>f/", telescope_builtin.live_grep, options)
-map("n", "<leader>/",  telescope_builtin.current_buffer_fuzzy_find, options)
-map("n", "<leader>fd", telescope_builtin.diagnostics, options)
-map("n", "<leader>fg", telescope_builtin.git_status, options)
-map("n", "<leader>fG", telescope_builtin.git_branches, options)
-map("n", "<leader>fz", telescope_builtin.git_stash, options)
-map("n", "<leader>fb", telescope_builtin.buffers, options)
-map("n", "<leader>fh", telescope_builtin.help_tags, options)
-map("n", "<leader>fm", telescope_builtin.keymaps, options)
-map("n", "<leader>fr", telescope_builtin.lsp_references, options)
-map("n", "<leader>f@", telescope_builtin.lsp_document_symbols, options)
-map("n", "<leader>fs", telescope_builtin.treesitter, options)
-map("n", "<leader>cw", telescope_builtin.spell_suggest, options)
-
--- Harpoon
-local harpoon_mark = require('harpoon.mark')
-local harpoon_ui = require('harpoon.ui')
-map("n", "<leader>h", harpoon_mark.add_file, options)
-map("n", "<leader>H", harpoon_ui.toggle_quick_menu, options)
-map("n", "<leader>j", function() harpoon_ui.nav_file(1) end, options)
-map("n", "<leader>k", function() harpoon_ui.nav_file(2) end, options)
-map("n", "<leader>l", function() harpoon_ui.nav_file(3) end, options)
-map("n", "<leader>;", function() harpoon_ui.nav_file(4) end, options)
-
--- debug
-map("n", "<leader>dd", function() require("trouble").open() end)
+dap.configurations.cpp = dap.configurations.c
+dap.configurations.rust = dap.configurations.c
+map("n", "<leader>bb", function () dap.toggle_breakpoint() end)
+map("n", "<leader>bj", function () dap.continue() end)
+map("n", "<leader>bk", function () dap.step_over() end)
+map("n", "<leader>bl", function () dap.step_into() end)
+map("n", "<leader>b;", function () dap.repl.open() end)
 
 -- Alternate File
 map("n", "<leader>'", ":e # <CR>", options)
-
--- gitsigns
-require("gitsigns").setup {
-  on_attach = function(bufnr)
-    local gs = package.loaded.gitsigns
-    local gitsigns_options = { noremap = true, buffer = bufnr }
-
-    -- actions
-    map({ "n", "v" }, "<leader>gs", gs.stage_hunk, gitsigns_options)
-    map("n", "<leader>gS", gs.stage_buffer, gitsigns_options)
-    map("n", "<leader>gu", gs.undo_stage_hunk, gitsigns_options)
-    map("n", "<leader>gU", gs.reset_buffer_index, gitsigns_options)
-    map({ "n", "v" }, "<leader>gr", gs.reset_hunk, gitsigns_options)
-    map("n", "<leader>gR", gs.reset_buffer, gitsigns_options)
-    map("n", "<leader>gp", gs.preview_hunk, gitsigns_options)
-    map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, gitsigns_options)
-    map("n", "<leader>gd", gs.diffthis)
-    map("n", "<leader>gD", function() gs.diffthis("~") end, gitsigns_options)
-
-    -- text objects
-    ---- navigation
-    local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-    local next_hunk_repeat, prev_hunk_repeat = ts_repeat_move.make_repeatable_move_pair(gs.next_hunk, gs.prev_hunk)
-    map({ "n", "x", "o" }, "]g", next_hunk_repeat)
-    map({ "n", "x", "o" }, "<leader>gj", next_hunk_repeat)
-    map({ "n", "x", "o" }, "[g", prev_hunk_repeat)
-    map({ "n", "x", "o" }, "<leader>gk", prev_hunk_repeat)
-
-    ---- selction
-    map({ "o", "x" }, "ig", ":<C-U>Gitsigns select_hunk<CR>", gitsigns_options)
-  end
-}
 
 ----------------------lsp----------------------
 local lsp = require("lsp-zero")
@@ -445,6 +497,8 @@ lsp.on_attach(function(client, bufnr)
 
   map("n", "K", vim.lsp.buf.hover, lsp_options)
   map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
+
+  map("i", "<C-h>", vim.lsp.buf.signature_help, lsp_options)
 end)
 
 lsp.nvim_workspace()
