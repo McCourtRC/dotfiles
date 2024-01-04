@@ -3,6 +3,11 @@
 ----------------------wip----------------------
 -- require('extract').setup()
 
+-- Nvim Tree Setup
+vim.g.loaded = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- Utils
 local map = vim.keymap.set
 local options = { noremap = true }
 
@@ -137,10 +142,10 @@ require('lazy').setup({
     dependencies = {"nvim-tree/nvim-web-devicons"},
   },
 
-  -- Autopairs
-  { "windwp/nvim-autopairs",
-    opts = {},
-  },
+  -- -- Autopairs
+  -- { "windwp/nvim-autopairs",
+  --   opts = {},
+  -- },
 
   -- HTML tags
   "windwp/nvim-ts-autotag",
@@ -303,9 +308,6 @@ require('lazy').setup({
 -- }
 
 })
-
-vim.g.loaded = 1
-vim.g.loaded_netrwPlugin = 1
 
 ----------------------config----------------------
 local o  = vim.o
