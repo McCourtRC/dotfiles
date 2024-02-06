@@ -396,8 +396,8 @@ map("v", "<leader>s", '"vy:%s/<C-r>v/', options)
 map("v", "J", ":m '>+1 <CR> gv= gv", options)
 map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
-map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
-map("n", "<leader>m", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
+map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
+map("n", "<leader>M", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
 
 local dap = require("dap")
 dap.adapters.lldb = {
