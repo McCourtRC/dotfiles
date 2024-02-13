@@ -19,6 +19,13 @@ config.keys = {
   { key = "k", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Up") },
   { key = "l", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Right") },
 
+  { key = "h", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 10 }) },
+  { key = "j", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 10 }) },
+  { key = "k", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 10 }) },
+  { key = "l", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 10 }) },
+  { key = "<", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 20 }) },
+  { key = ":", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 20 }) },
+
   { key = "r", mods = "ALT", action = wezterm.action.RotatePanes("Clockwise") },
   { key = "R", mods = "ALT", action = wezterm.action.RotatePanes("CounterClockwise") },
 
