@@ -142,11 +142,6 @@ require('lazy').setup({
     dependencies = {"nvim-tree/nvim-web-devicons"},
   },
 
-  -- -- Autopairs
-  -- { "windwp/nvim-autopairs",
-  --   opts = {},
-  -- },
-
   -- HTML tags
   "windwp/nvim-ts-autotag",
 
@@ -242,28 +237,22 @@ require('lazy').setup({
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
 
-  -- Completion
-  {
-    "VonHeikemen/lsp-zero.nvim",
-    dependencies = {
-      -- LSP Support
-      {"neovim/nvim-lspconfig"},
-      {"williamboman/mason.nvim"},
-      {"williamboman/mason-lspconfig.nvim"},
+  -- LSP Support
+  {"neovim/nvim-lspconfig"},
+  {"williamboman/mason.nvim"},
+  {"williamboman/mason-lspconfig.nvim"},
 
-      -- Autocompletion
-      {"hrsh7th/nvim-cmp"},
-      {"hrsh7th/cmp-buffer"},
-      {"hrsh7th/cmp-path"},
-      {"saadparwaiz1/cmp_luasnip"},
-      {"hrsh7th/cmp-nvim-lsp"},
-      {"hrsh7th/cmp-nvim-lua"},
+  -- Autocompletion
+  {"hrsh7th/nvim-cmp"},
+  {"hrsh7th/cmp-buffer"},
+  {"hrsh7th/cmp-path"},
+  {"saadparwaiz1/cmp_luasnip"},
+  {"hrsh7th/cmp-nvim-lsp"},
+  {"hrsh7th/cmp-nvim-lua"},
 
-      -- Snippets
-      {"L3MON4D3/LuaSnip"},
-      {"rafamadriz/friendly-snippets"},
-    }
-  },
+  -- Snippets
+  {"L3MON4D3/LuaSnip"},
+  {"rafamadriz/friendly-snippets"},
 
   {
     "folke/trouble.nvim",
@@ -446,68 +435,105 @@ map("n", "<leader>b;", function () dap.repl.open() end)
 map("n", "<leader>'", ":e # <CR>", options)
 
 ----------------------lsp----------------------
-local lsp = require("lsp-zero")
+local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
+map("n", "]d",         goto_next, options)
+map("n", "<leader>dj", goto_next, options)
+map("n", "[d",         goto_prev, options)
+map("n", "<leader>dk", goto_prev, options)
+map("n", "<leader>dl", vim.diagnostic.open_float, options)
 
-lsp.preset("recommended")
+vim.api.nvim_create_autocmd("LspAttach", {
+  desc = "LSP Actions",
+  callback = function(event)
+    local lsp_options = { noremap = true, silent = true, buffer = event.buf }
 
-lsp.set_preferences({
-  set_lsp_keymaps = false,
+    map("n", "gd", vim.lsp.buf.definition, lsp_options)
+    map("n", "gD", vim.lsp.buf.declaration, lsp_options)
+    map("n", "gr", vim.lsp.buf.references, lsp_options)
+    map("n", "gI", vim.lsp.buf.implementation, lsp_options)
+
+    map("n", "<leader>ca", vim.lsp.buf.code_action, lsp_options)
+    map("n", "<leader>rn", vim.lsp.buf.rename, lsp_options)
+    map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
+
+    map("n", "K", vim.lsp.buf.hover, lsp_options)
+    map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
+
+    map("i", "<C-h>", vim.lsp.buf.signature_help, lsp_options)
+  end,
 })
 
-lsp.ensure_installed({
-  "cssls",
-  "eslint",
-  "graphql",
-  "html",
-  "jsonls",
-  "rust_analyzer",
-  -- "sumneko_lua",
-  -- "tailwindcss",
-  "tsserver",
-  "yamlls",
+local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+local default_setup = function(server)
+  require('lspconfig')[server].setup({
+    capabilities = lsp_capabilities,
+  })
+end
+
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  -- ensure_installed = {
+  -- "cssls",
+  -- "eslint",
+  -- "html",
+  -- "jsonls",
+  -- "rust_analyzer",
+  -- -- "sumneko_lua",
+  -- -- "tailwindcss",
+  -- "tsserver",
+  -- "yamlls",
+  -- }
+  handlers = {
+    default_setup,
+    lua_ls = function()
+      require('lspconfig').lua_ls.setup({
+        capabilities = lsp_capabilities,
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT'
+            },
+            diagnostics = {
+              globals = {'vim'},
+            },
+            workspace = {
+              library = {
+                vim.env.VIMRUNTIME,
+              },
+            },
+          },
+        },
+      })
+    end
+  },
 })
 
 -- Completion
 local cmp = require("cmp")
+-- local cmp_action = require("lsp-zero").cmp_action()
 
-lsp.setup_nvim_cmp({
-  mapping = lsp.defaults.cmp_mappings({
+cmp.setup({
+  sources = {
+    { name = "nvim_lsp" },
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
   }),
+  snippet = {
+    expand = function(args)
+      require("luasnip").lsp_expand(args.body)
+    end,
+  },
 })
 
-lsp.on_attach(function(client, bufnr)
-  local lsp_options = { noremap = true, silent = true, buffer = bufnr }
-
-  map("n", "gd", vim.lsp.buf.definition, lsp_options)
-  map("n", "gD", vim.lsp.buf.declaration, lsp_options)
-  map("n", "gr", vim.lsp.buf.references, lsp_options)
-  map("n", "gI", vim.lsp.buf.implementation, lsp_options)
-
-  local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-  local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
-  map("n", "]d",         goto_next, lsp_options)
-  map("n", "<leader>dj", goto_next, lsp_options)
-  map("n", "[d",         goto_prev, lsp_options)
-  map("n", "<leader>dk", goto_prev, lsp_options)
-  map("n", "<leader>dl", vim.diagnostic.open_float, lsp_options)
-
-  map("n", "<leader>ca", vim.lsp.buf.code_action, lsp_options)
-  map("n", "<leader>rn", vim.lsp.buf.rename, lsp_options)
-  map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
-
-  map("n", "K", vim.lsp.buf.hover, lsp_options)
-  map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
-
-  map("i", "<C-h>", vim.lsp.buf.signature_help, lsp_options)
-end)
-
-lsp.nvim_workspace()
-lsp.setup()
+-- lsp.nvim_workspace()
+-- lsp.setup()
 
 ----------------------treesitter----------------------
 require"nvim-treesitter.configs".setup {
@@ -636,8 +662,6 @@ require"nvim-treesitter.configs".setup {
     },
   },
 }
-
-local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
 
 map({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
 map({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
