@@ -231,7 +231,13 @@ require('lazy').setup({
   -- Treesitter
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
   "nvim-treesitter/nvim-treesitter-textobjects",
-  "nvim-treesitter/nvim-treesitter-context",
+  { "nvim-treesitter/nvim-treesitter-context",
+    opts = {
+      enable = true,
+      max_lines = 5,
+    },
+  },
+  "nvim-treesitter/playground",
 
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
@@ -308,6 +314,7 @@ o.ignorecase = true
 o.smartcase = true
 o.scrolloff = 999
 o.sidescrolloff = 10
+o.cursorline = true
 o.completeopt = "menuone,noselect"
 o.inccommand = "split"
 o.tabstop = 2
