@@ -217,15 +217,20 @@ require('lazy').setup({
 
   -- Harpoon
   { "ThePrimeagen/harpoon",
+    branch = "harpoon2",
     dependencies = {{"nvim-lua/plenary.nvim"}},
     keys = {
-      { "<leader>h", function() require('harpoon.mark').add_file() end, desc = "Harpoon File" },
-      { "<leader>H", function() require('harpoon.ui').toggle_quick_menu() end, desc = "Harpoon Menu" },
-      { "<leader>j", function() require('harpoon.ui').nav_file(1) end, desc = "Harpoon File 1" },
-      { "<leader>k", function() require('harpoon.ui').nav_file(2) end, desc = "Harpoon File 2" },
-      { "<leader>l", function() require('harpoon.ui').nav_file(3) end, desc = "Harpoon File 3" },
-      { "<leader>;", function() require('harpoon.ui').nav_file(4) end, desc = "Harpoon File 4" },
+      { "<leader>h", function() require("harpoon"):list():add() end, desc = "Harpoon File" },
+      { "<leader>H", function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end, desc = "Harpoon Menu" },
+      { "<leader>j", function() require("harpoon"):list():select(1) end, desc = "Harpoon File 1" },
+      { "<leader>k", function() require("harpoon"):list():select(2) end, desc = "Harpoon File 2" },
+      { "<leader>l", function() require("harpoon"):list():select(3) end, desc = "Harpoon File 3" },
+      { "<leader>;", function() require("harpoon"):list():select(4) end, desc = "Harpoon File 4" },
     },
+    config = function()
+      local harpoon = require("harpoon")
+      harpoon:setup()
+    end
   },
 
   -- Treesitter
