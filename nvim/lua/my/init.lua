@@ -304,7 +304,10 @@ require('lazy').setup({
       -- Your DBUI configuration
       vim.g.db_ui_use_nerd_fonts = 1
     end,
-  }
+  },
+
+  -- Copilot
+  "github/copilot.vim",
 
   -- Notes
   -- {
@@ -426,9 +429,6 @@ map("n", "L", "gt", options)
 map("n", "]q", ":cnext <CR>", options)
 map("n", "[q", ":cprev <CR>", options)
 
--- Open URL
--- map("n", "gx", "<cmd>!open <cword><CR>", options)
-
 -- Yank to clipboard
 map({ "n", "v" }, "<leader>y", '"+y', options)
 
@@ -455,6 +455,9 @@ map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
 map("n", "<leader>M", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
+
+-- console.log
+map("n", "<leader>t", "yiwoconsole.log('<C-R>\"', <C-R>\");<ESC>_gUi'$", options)
 
 local dap = require("dap")
 dap.adapters.lldb = {
