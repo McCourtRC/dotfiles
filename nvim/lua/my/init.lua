@@ -3,10 +3,6 @@
 ----------------------wip----------------------
 -- require('extract').setup()
 
--- Nvim Tree Setup
-vim.g.loaded = 1
-vim.g.loaded_netrwPlugin = 1
-
 -- Utils
 local map = vim.keymap.set
 local options = { noremap = true }
@@ -18,19 +14,25 @@ vim.g.mapleader = " "
 ----------------------plugins----------------------
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- automatically check for plugin updates
+  checker = { enabled = true },
+
   -- Plenary
   "nvim-lua/plenary.nvim",
 
@@ -156,13 +158,6 @@ require('lazy').setup({
   },
 
   -- File Tree
-  { "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {},
-    keys = {
-      { "<leader>ft", function() require("nvim-tree.api").tree.toggle() end, desc = "File Tree" },
-    },
-  },
   {
     'stevearc/oil.nvim',
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -256,12 +251,15 @@ require('lazy').setup({
   {"hrsh7th/nvim-cmp"},
   {"hrsh7th/cmp-buffer"},
   {"hrsh7th/cmp-path"},
+  {"hrsh7th/cmp-cmdline"},
   {"saadparwaiz1/cmp_luasnip"},
   {"hrsh7th/cmp-nvim-lsp"},
   {"hrsh7th/cmp-nvim-lua"},
 
   -- Snippets
-  {"L3MON4D3/LuaSnip"},
+  {"L3MON4D3/LuaSnip",
+    version = "v2.2",
+  },
   {"rafamadriz/friendly-snippets"},
 
   {
@@ -290,21 +288,75 @@ require('lazy').setup({
     },
   },
 
---   -- ChatGPT
---   {
---     "jackMort/ChatGPT.nvim",
---     event = "VeryLazy",
---     config = function()
---       require("chatgpt").setup({
---         api_key_cmd = "pass show openai/api/keys/chatgpt.nvim",
---       })
---     end,
---     dependencies = {
---       "MunifTanjim/nui.nvim",
---       "nvim-lua/plenary.nvim",
---       "nvim-telescope/telescope.nvim"
---   },
--- }
+  -- Database
+  { "kristijanhusak/vim-dadbod-ui",
+    dependencies = {
+      { "tpope/vim-dadbod", lazy = true },
+      { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql", "sqlite" }, lazy = true },
+    },
+    cmd = {
+      "DBUI",
+      "DBUIToggle",
+      "DBUIAddConnection",
+      "DBUIFindBuffer",
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  }
+
+  -- Notes
+  -- {
+  --   "epwalsh/obsidian.nvim",
+  --   version = "*",  -- recommended, use latest release instead of latest commit
+  --   lazy = true,
+  --   ft = "markdown",
+  --   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+  --   -- event = {
+  --   --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+  --   --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+  --   --   "BufReadPre path/to/my-vault/**.md",
+  --   --   "BufNewFile path/to/my-vault/**.md",
+  --   -- },
+  --   dependencies = {
+  --     -- Required.
+  --     "nvim-lua/plenary.nvim",
+  --
+  --     -- see below for full list of optional dependencies 👇
+  --   },
+  --   opts = {
+  --     workspaces = {
+  --       {
+  --         name = "personal",
+  --         path = "~/Documents/brain",
+  --       },
+  --     },
+  --     -- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
+  --     completion = {
+  --       -- Set to false to disable completion.
+  --       nvim_cmp = true,
+  --       -- Trigger completion at 2 chars.
+  --       min_chars = 2,
+  --     },
+  --   },
+  -- }
+
+  -- -- ChatGPT
+  -- { "jackMort/ChatGPT.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("chatgpt").setup({
+  --       api_key_cmd = "op read op://private/ChatGPT/credential --no-newline"
+  --     })
+  --   end,
+  --   dependencies = {
+  --     "MunifTanjim/nui.nvim",
+  --     "nvim-lua/plenary.nvim",
+  --     "folke/trouble.nvim",
+  --     "nvim-telescope/telescope.nvim"
+  --   },
+  -- },
 
 })
 
@@ -319,7 +371,6 @@ o.ignorecase = true
 o.smartcase = true
 o.scrolloff = 999
 o.sidescrolloff = 10
-o.cursorline = true
 o.completeopt = "menuone,noselect"
 o.inccommand = "split"
 o.tabstop = 2
@@ -327,6 +378,9 @@ o.shiftwidth = 2
 o.expandtab = true
 o.undofile = true
 o.equalalways = true
+o.cursorline = true
+
+vim.opt.conceallevel = 2
 
 -- window-scoped options
 wo.number = true
@@ -371,6 +425,9 @@ map("n", "L", "gt", options)
 -- QuickFix Navigation
 map("n", "]q", ":cnext <CR>", options)
 map("n", "[q", ":cprev <CR>", options)
+
+-- Open URL
+-- map("n", "gx", "<cmd>!open <cword><CR>", options)
 
 -- Yank to clipboard
 map({ "n", "v" }, "<leader>y", '"+y', options)
@@ -448,9 +505,7 @@ map("n", "<leader>'", ":e # <CR>", options)
 ----------------------lsp----------------------
 local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
 local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
-map("n", "]d",         goto_next, options)
 map("n", "<leader>dj", goto_next, options)
-map("n", "[d",         goto_prev, options)
 map("n", "<leader>dk", goto_prev, options)
 map("n", "<leader>dl", vim.diagnostic.open_float, options)
 
@@ -468,7 +523,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "<leader>rn", vim.lsp.buf.rename, lsp_options)
     map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
 
-    map("n", "K", vim.lsp.buf.hover, lsp_options)
     map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
 
     map("i", "<C-h>", vim.lsp.buf.signature_help, lsp_options)
@@ -482,6 +536,9 @@ local default_setup = function(server)
     capabilities = lsp_capabilities,
   })
 end
+require('lspconfig')['gleam'].setup({
+  capabilities = lsp_capabilities,
+})
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -523,11 +580,16 @@ require('mason-lspconfig').setup({
 
 -- Completion
 local cmp = require("cmp")
--- local cmp_action = require("lsp-zero").cmp_action()
 
 cmp.setup({
   sources = {
     { name = "nvim_lsp" },
+    { name = "luasnip" },
+    { name = "vim-dadbod-completion" },
+    { name = "path" },
+  }, {
+    { name = "buffer" },
+    { name = "vim-dadbod-completion" },
   },
   mapping = cmp.mapping.preset.insert({
     ["<C-Space>"] = cmp.mapping.complete(),
@@ -543,11 +605,35 @@ cmp.setup({
   },
 })
 
+-- cmp.setup.filetype('gitcommit', {
+--   sources = cmp.config.sources({
+--     { name = 'git' },
+--   }, {
+--     { name = 'buffer' },
+--   })
+-- })
+
+-- cmp.setup.cmdline({ '/', '?' }, {
+--   mapping = cmp.mapping.preset.cmdline(),
+--   sources = {
+--     { name = 'buffer' }
+--   }
+-- })
+
+-- cmp.setup.cmdline(':', {
+--   mapping = cmp.mapping.preset.cmdline(),
+--   sources = cmp.config.sources({
+--     { name = 'path' }
+--   }, {
+--     { name = 'cmdline' }
+--   })
+-- })
+
 -- lsp.nvim_workspace()
 -- lsp.setup()
 
 ----------------------treesitter----------------------
-require"nvim-treesitter.configs".setup {
+require("nvim-treesitter.configs").setup({
   -- ensure_installed = { "" },
   auto_install = true,
   ignore_install = { "phpdoc" }, -- List of parsers to ignore installing
@@ -672,7 +758,7 @@ require"nvim-treesitter.configs".setup {
       },
     },
   },
-}
+})
 
 map({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
 map({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
