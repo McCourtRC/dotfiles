@@ -179,17 +179,20 @@ require('lazy').setup({
             "packer_compiled",  -- lua
             "target",           -- rust
           },
-          sorting_strategy="ascending",
+          sorting_strategy = "ascending",
           layout_config = {
             prompt_position = "top"
-          }
-        }
+          },
+        },
+        extensions = {
+          fzy = {},
+        },
       })
       require("telescope").load_extension("fzy_native")
     end,
     keys = {
       { "<leader>f.", function() require("telescope.builtin").resume() end, desc = "Find Reopen" },
-      { "<leader>ff", function() require("telescope.builtin").find_files() end, desc = "Find Files" },
+      { "<leader>fa", function() require("telescope.builtin").find_files() end, desc = "Find Files" },
       { "<leader>fo", function() require("telescope.builtin").oldfiles() end, desc = "Find Recent Files" },
       { "<leader>fw", function() require("telescope.builtin").grep_string() end, desc = "Find Word" },
       { "<leader>fW", function() require("telescope.builtin").grep_string({ search = vim.fn.expand("<cWORD>") }) end, desc = "Find WORD" },
@@ -237,30 +240,94 @@ require('lazy').setup({
       max_lines = 5,
     },
   },
-  "nvim-treesitter/playground",
 
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
 
+  -- {"hrsh7th/nvim-cmp"},
+  -- {"hrsh7th/cmp-buffer"},
+  -- {"hrsh7th/cmp-path"},
+  -- {"hrsh7th/cmp-cmdline"},
+  -- {"saadparwaiz1/cmp_luasnip"},
+  -- {"hrsh7th/cmp-nvim-lsp"},
+  -- {"hrsh7th/cmp-nvim-lua"},
+
+  -- Autocompletion
+  { 'saghen/blink.cmp',
+    version = 'v0.*',
+    dependencies = {
+      -- Snippets
+      { 'L3MON4D3/LuaSnip', version = 'v2.*'},
+      { 'rafamadriz/friendly-snippets' },
+    },
+
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      keymap = { preset = 'default' },
+      appearance = {
+        nerd_font_variant = 'mono'
+      },
+      signature = { enabled = true },
+      snippets = {
+        expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
+        active = function(filter)
+          if filter and filter.direction then
+            return require('luasnip').jumpable(filter.direction)
+          end
+          return require('luasnip').in_snippet()
+        end,
+        jump = function(direction) require('luasnip').jump(direction) end,
+      },
+      sources = {
+        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+        providers = {
+          lazydev = {
+            name = "LazyDev",
+            module = "lazydev.integrations.blink",
+            -- make lazydev completions top priority (see `:h blink.cmp`)
+            score_offset = 100,
+          },
+        },
+      },
+    },
+    -- opts_extend = { "sources.default" }
+  },
+
   -- LSP Support
-  {"neovim/nvim-lspconfig"},
+  {"neovim/nvim-lspconfig",
+    dependencies = {
+      { "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+          library = {
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+          },
+        },
+      },
+    },
+
+	  config = function()
+	    local lspconfig = require("lspconfig")
+      local servers = require("mason-lspconfig").get_installed_servers()
+
+	    for _, server in ipairs(servers) do
+        local config = {
+          capabilities = require('blink.cmp').get_lsp_capabilities()
+        }
+	      lspconfig[server].setup(config)
+	    end
+      lspconfig.gleam.setup({
+        capabilities = require('blink.cmp').get_lsp_capabilities()
+      })
+	  end,
+  },
   {"williamboman/mason.nvim"},
   {"williamboman/mason-lspconfig.nvim"},
 
-  -- Autocompletion
-  {"hrsh7th/nvim-cmp"},
-  {"hrsh7th/cmp-buffer"},
-  {"hrsh7th/cmp-path"},
-  {"hrsh7th/cmp-cmdline"},
-  {"saadparwaiz1/cmp_luasnip"},
-  {"hrsh7th/cmp-nvim-lsp"},
-  {"hrsh7th/cmp-nvim-lua"},
 
-  -- Snippets
-  {"L3MON4D3/LuaSnip",
-    version = "v2.2",
-  },
-  {"rafamadriz/friendly-snippets"},
+  { "rafamadriz/friendly-snippets" },
 
   {
     "folke/trouble.nvim",
@@ -269,6 +336,7 @@ require('lazy').setup({
       { "<leader>dd", function() require("trouble").open() end, desc = "Trouble Toggle"},
     },
   },
+
   -- Debug
   "mfussenegger/nvim-dap",
   { "laytan/cloak.nvim",
@@ -304,10 +372,7 @@ require('lazy').setup({
       -- Your DBUI configuration
       vim.g.db_ui_use_nerd_fonts = 1
     end,
-  },
-
-  -- Copilot
-  "github/copilot.vim",
+  }
 
   -- Notes
   -- {
@@ -429,6 +494,9 @@ map("n", "L", "gt", options)
 map("n", "]q", ":cnext <CR>", options)
 map("n", "[q", ":cprev <CR>", options)
 
+-- Open URL
+-- map("n", "gx", "<cmd>!open <cword><CR>", options)
+
 -- Yank to clipboard
 map({ "n", "v" }, "<leader>y", '"+y', options)
 
@@ -455,9 +523,6 @@ map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
 map("n", "<leader>M", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
-
--- console.log
-map("n", "<leader>t", "yiwoconsole.log('<C-R>\"', <C-R>\");<ESC>_gUi'$", options)
 
 local dap = require("dap")
 dap.adapters.lldb = {
@@ -532,16 +597,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+local lsp_capabilities = require('blink.cmp').get_lsp_capabilities()
 
 local default_setup = function(server)
   require('lspconfig')[server].setup({
     capabilities = lsp_capabilities,
   })
 end
-require('lspconfig')['gleam'].setup({
-  capabilities = lsp_capabilities,
-})
+-- require('lspconfig')['gleam'].setup({
+--   capabilities = lsp_capabilities,
+-- })
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -555,7 +620,7 @@ require('mason-lspconfig').setup({
   -- -- "tailwindcss",
   -- "tsserver",
   -- "yamlls",
-  -- }
+  -- },
   handlers = {
     default_setup,
     lua_ls = function()
@@ -582,58 +647,32 @@ require('mason-lspconfig').setup({
 })
 
 -- Completion
-local cmp = require("cmp")
+-- local cmp = require("cmp")
 
-cmp.setup({
-  sources = {
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "vim-dadbod-completion" },
-    { name = "path" },
-  }, {
-    { name = "buffer" },
-    { name = "vim-dadbod-completion" },
-  },
-  mapping = cmp.mapping.preset.insert({
-    ["<C-Space>"] = cmp.mapping.complete(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-e>"] = cmp.mapping.abort(),
-  }),
-  snippet = {
-    expand = function(args)
-      require("luasnip").lsp_expand(args.body)
-    end,
-  },
-})
-
--- cmp.setup.filetype('gitcommit', {
---   sources = cmp.config.sources({
---     { name = 'git' },
---   }, {
---     { name = 'buffer' },
---   })
--- })
-
--- cmp.setup.cmdline({ '/', '?' }, {
---   mapping = cmp.mapping.preset.cmdline(),
+-- cmp.setup({
 --   sources = {
---     { name = 'buffer' }
---   }
--- })
-
--- cmp.setup.cmdline(':', {
---   mapping = cmp.mapping.preset.cmdline(),
---   sources = cmp.config.sources({
---     { name = 'path' }
+--     { name = "nvim_lsp" },
+--     { name = "luasnip" },
+--     { name = "vim-dadbod-completion" },
+--     { name = "path" },
+--     { name = "buffer", keyword_length = 100 },
 --   }, {
---     { name = 'cmdline' }
---   })
+--     { name = "buffer" },
+--     { name = "vim-dadbod-completion" },
+--   },
+--   mapping = cmp.mapping.preset.insert({
+--     ["<C-Space>"] = cmp.mapping.complete(),
+--     ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+--     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+--     ["<C-f>"] = cmp.mapping.scroll_docs(4),
+--     ["<C-e>"] = cmp.mapping.abort(),
+--   }),
+--   snippet = {
+--     expand = function(args)
+--       require("luasnip").lsp_expand(args.body)
+--     end,
+--   },
 -- })
-
--- lsp.nvim_workspace()
--- lsp.setup()
 
 ----------------------treesitter----------------------
 require("nvim-treesitter.configs").setup({
