@@ -244,14 +244,6 @@ require('lazy').setup({
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
 
-  -- {"hrsh7th/nvim-cmp"},
-  -- {"hrsh7th/cmp-buffer"},
-  -- {"hrsh7th/cmp-path"},
-  -- {"hrsh7th/cmp-cmdline"},
-  -- {"saadparwaiz1/cmp_luasnip"},
-  -- {"hrsh7th/cmp-nvim-lsp"},
-  -- {"hrsh7th/cmp-nvim-lua"},
-
   -- Autocompletion
   { 'saghen/blink.cmp',
     version = 'v0.*',
@@ -372,60 +364,25 @@ require('lazy').setup({
       -- Your DBUI configuration
       vim.g.db_ui_use_nerd_fonts = 1
     end,
-  }
+  },
 
-  -- Notes
-  -- {
-  --   "epwalsh/obsidian.nvim",
-  --   version = "*",  -- recommended, use latest release instead of latest commit
-  --   lazy = true,
-  --   ft = "markdown",
-  --   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
-  --   -- event = {
-  --   --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-  --   --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-  --   --   "BufReadPre path/to/my-vault/**.md",
-  --   --   "BufNewFile path/to/my-vault/**.md",
-  --   -- },
-  --   dependencies = {
-  --     -- Required.
-  --     "nvim-lua/plenary.nvim",
-  --
-  --     -- see below for full list of optional dependencies 👇
-  --   },
-  --   opts = {
-  --     workspaces = {
-  --       {
-  --         name = "personal",
-  --         path = "~/Documents/brain",
-  --       },
-  --     },
-  --     -- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
-  --     completion = {
-  --       -- Set to false to disable completion.
-  --       nvim_cmp = true,
-  --       -- Trigger completion at 2 chars.
-  --       min_chars = 2,
-  --     },
-  --   },
-  -- }
-
-  -- -- ChatGPT
-  -- { "jackMort/ChatGPT.nvim",
-  --   event = "VeryLazy",
-  --   config = function()
-  --     require("chatgpt").setup({
-  --       api_key_cmd = "op read op://private/ChatGPT/credential --no-newline"
-  --     })
-  --   end,
-  --   dependencies = {
-  --     "MunifTanjim/nui.nvim",
-  --     "nvim-lua/plenary.nvim",
-  --     "folke/trouble.nvim",
-  --     "nvim-telescope/telescope.nvim"
-  --   },
-  -- },
-
+  -- Copilot
+  "github/copilot.vim",
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "github/copilot.vim" }, -- or zbirenbaum/copilot.lua
+      { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+    },
+    build = "make tiktoken", -- Only on MacOS or Linux
+    opts = {
+      -- See Configuration section for options
+    },
+    keys = {
+      { "<leader>cp", function() require("CopilotChat").toggle() end, desc = "CopilotChat Toggle"},
+    },
+    -- See Commands section for default commands if you want to lazy load on them
+  },
 })
 
 ----------------------config----------------------
@@ -608,9 +565,10 @@ end
 --   capabilities = lsp_capabilities,
 -- })
 
-require('mason').setup({})
+require('mason').setup()
 require('mason-lspconfig').setup({
-  -- ensure_installed = {
+  automatic_installation = false,
+  ensure_installed = {
   -- "cssls",
   -- "eslint",
   -- "html",
@@ -620,7 +578,7 @@ require('mason-lspconfig').setup({
   -- -- "tailwindcss",
   -- "tsserver",
   -- "yamlls",
-  -- },
+  },
   handlers = {
     default_setup,
     lua_ls = function()
