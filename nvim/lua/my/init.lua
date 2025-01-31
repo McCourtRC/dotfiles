@@ -170,6 +170,7 @@ require('lazy').setup({
   -- Telescope
   "nvim-telescope/telescope-fzy-native.nvim",
   { "nvim-telescope/telescope.nvim",    -- brew install ripgrep
+    branch = '0.1.x',
     dependencies = {{"nvim-lua/plenary.nvim"}},
     config = function ()
       require("telescope").setup({
@@ -436,6 +437,8 @@ vim.cmd[[colorscheme catppuccin]]
 -- vim.cmd[[colorscheme oxocarbon]]
 
 ----------------------mappings----------------------
+local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+
 -- Window Navigation
 map("n", "<C-j>", "<C-w>j", options)
 map("n", "<C-k>", "<C-w>k", options)
@@ -448,8 +451,11 @@ map("n", "H", "gT", options)
 map("n", "L", "gt", options)
 
 -- QuickFix Navigation
-map("n", "]q", ":cnext <CR>", options)
-map("n", "[q", ":cprev <CR>", options)
+local quickfix_next, quickfix_prev = ts_repeat_move.make_repeatable_move_pair(function() vim.cmd("cnext") end, function() vim.cmd("cprev") end)
+map("n", "]q", quickfix_next, { noremap = true, silent = true })
+map("n", "<leader>qj", quickfix_next, { noremap = true, silent = true })
+map("n", "[q", quickfix_prev, { noremap = true, silent = true })
+map("n", "<leader>qk", quickfix_prev, { noremap = true, silent = true })
 
 -- Open URL
 -- map("n", "gx", "<cmd>!open <cword><CR>", options)
@@ -528,7 +534,6 @@ map("n", "<leader>b;", function () dap.repl.open() end)
 map("n", "<leader>'", ":e # <CR>", options)
 
 ----------------------lsp----------------------
-local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
 local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
 map("n", "<leader>dj", goto_next, options)
 map("n", "<leader>dk", goto_prev, options)
