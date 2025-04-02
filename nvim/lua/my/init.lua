@@ -487,6 +487,9 @@ map("v", "K", ":m '<-2 <CR> gv= gv", options)
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
 map("n", "<leader>M", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
 
+-- Inspect Tree
+map("n", "<leader>i", "<cmd>InspectTree <cr>", { desc = "Inspect Tree" })
+
 local dap = require("dap")
 dap.adapters.lldb = {
   type = 'executable',
