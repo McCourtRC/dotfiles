@@ -245,107 +245,16 @@ require('lazy').setup({
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
 
-  -- Autocompletion
-  { 'saghen/blink.cmp',
-    version = 'v0.*',
-    dependencies = {
-      -- Snippets
-      { 'L3MON4D3/LuaSnip', version = 'v2.*'},
-      { 'rafamadriz/friendly-snippets' },
-    },
 
-    ---@module 'blink.cmp'
-    ---@type blink.cmp.Config
-    opts = {
-      keymap = { preset = 'default' },
-      appearance = {
-        nerd_font_variant = 'mono'
-      },
-      signature = { enabled = true },
-      snippets = {
-        expand = function(snippet) require('luasnip').lsp_expand(snippet) end,
-        active = function(filter)
-          if filter and filter.direction then
-            return require('luasnip').jumpable(filter.direction)
-          end
-          return require('luasnip').in_snippet()
-        end,
-        jump = function(direction) require('luasnip').jump(direction) end,
-      },
-      sources = {
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-        providers = {
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            -- make lazydev completions top priority (see `:h blink.cmp`)
-            score_offset = 100,
-          },
-        },
-      },
-    },
-    -- opts_extend = { "sources.default" }
-  },
-
-  -- LSP Support
-  {"neovim/nvim-lspconfig",
-    dependencies = {
-      { "folke/lazydev.nvim",
-        ft = "lua", -- only load on lua files
-        opts = {
-          library = {
-            -- Load luvit types when the `vim.uv` word is found
-            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-          },
-        },
-      },
-    },
-
-	  config = function()
-	    local lspconfig = require("lspconfig")
-      local servers = require("mason-lspconfig").get_installed_servers()
-
-	    for _, server in ipairs(servers) do
-        local config = {
-          capabilities = require('blink.cmp').get_lsp_capabilities()
-        }
-	      lspconfig[server].setup(config)
-	    end
-      lspconfig.gleam.setup({
-        capabilities = require('blink.cmp').get_lsp_capabilities()
-      })
-	  end,
-  },
-  {"williamboman/mason.nvim"},
-  {"williamboman/mason-lspconfig.nvim"},
-
-
-  { "rafamadriz/friendly-snippets" },
+  --     -- Snippets
+  { 'L3MON4D3/LuaSnip', version = 'v2.*'},
+  { 'rafamadriz/friendly-snippets' },
 
   {
     "folke/trouble.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     keys = {
       { "<leader>dd", function() require("trouble").open() end, desc = "Trouble Toggle"},
-    },
-  },
-
-  -- Debug
-  "mfussenegger/nvim-dap",
-  { "laytan/cloak.nvim",
-    opts = {
-      enabled = true,
-      cloak_character = '*',
-      highlight_group = 'Comment',
-      cloak_length = nil,
-      try_all_patterns = true,
-      patterns = {
-        {
-          file_pattern = '.env*',
-          cloak_pattern = '=.+',
-          replace = nil,
-        },
-      },
     },
   },
 
@@ -386,32 +295,52 @@ require('lazy').setup({
   },
 })
 
+----------------------corl------------------------
+vim.filetype.add({
+  extension = {
+    corl = "corl"
+  }
+})
+
+local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+parser_config.corl = {
+  install_info = {
+    url = "~/dev/bitlikethis/corlang/tree-sitter-corl", -- local path or git repo
+    files = {"src/parser.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+    -- optional entries:
+    -- branch = "main", -- default branch in case of git repo if different from master
+    -- generate_requires_npm = true, -- if stand-alone parser without npm dependencies
+    -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
+  },
+  filetype = "corl", -- if filetype does not match the parser name
+}
+-- vim.treesitter.language.register('corl', 'corl')
+
 ----------------------config----------------------
-local o  = vim.o
-local wo = vim.wo
--- local bo = vim.bo
 
 -- buffer-scoped and window-scoped options
-o.hlsearch = false
-o.ignorecase = true
-o.smartcase = true
-o.scrolloff = 999
-o.sidescrolloff = 10
-o.completeopt = "menuone,noselect"
-o.inccommand = "split"
-o.tabstop = 2
-o.shiftwidth = 2
-o.expandtab = true
-o.undofile = true
-o.equalalways = true
-o.cursorline = true
+vim.o.hlsearch = false
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.scrolloff = 999
+vim.o.sidescrolloff = 10
+vim.o.completeopt = "menuone,noselect,popup"
+vim.o.inccommand = "split"
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
+vim.o.expandtab = true
+vim.o.undofile = true
+vim.o.equalalways = true
+vim.o.cursorline = true
+vim.o.winborder = "rounded"
+
 
 vim.opt.conceallevel = 2
 
 -- window-scoped options
-wo.number = true
--- wo.relativenumber = true
-wo.wrap = false
+vim.wo.number = true
+-- vim.wo.relativenumber = true
+vim.wo.wrap = false
 
 -- markdown settings
 vim.api.nvim_exec([[
@@ -469,10 +398,6 @@ map("v", "<leader>h", 'y:vert help <C-r>" <CR>', options)
 -- Source File
 map("n", "<leader>%", "<cmd>source % <CR>", options)
 
--- Blank line
-map("n", "<leader>o", "mmo<Esc>`m", options)
-map("n", "<leader>O", "mmO<Esc>`m", options)
-
 -- Paste Yanked
 map({ "n", "v" }, "<leader>p", '"0p', options)
 map({ "n", "v" }, "<leader>P", '"0P', options)
@@ -485,132 +410,50 @@ map("v", "J", ":m '>+1 <CR> gv= gv", options)
 map("v", "K", ":m '<-2 <CR> gv= gv", options)
 
 map("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy Toggle" })
-map("n", "<leader>M", "<cmd>Mason<cr>", { desc = "Mason Toggle" })
 
 -- Inspect Tree
 map("n", "<leader>i", "<cmd>InspectTree <cr>", { desc = "Inspect Tree" })
-
-local dap = require("dap")
-dap.adapters.lldb = {
-  type = 'executable',
-  command = '/usr/bin/lldb',
-  name = 'lldb',
-}
-dap.configurations.c = {
-  {
-    name = 'Launch',
-    type = 'lldb',
-    request = 'launch',
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    args = {},
-
-    -- 💀
-    -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
-    --
-    --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-    --
-    -- Otherwise you might get the following error:
-    --
-    --    Error on launch: Failed to attach to the target process
-    --
-    -- But you should be aware of the implications:
-    -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-    -- runInTerminal = false,
-  },
-}
-
--- If you want to use this for Rust and C, add something like this:
-
-dap.configurations.cpp = dap.configurations.c
-dap.configurations.rust = dap.configurations.c
-map("n", "<leader>bb", function () dap.toggle_breakpoint() end)
-map("n", "<leader>bj", function () dap.continue() end)
-map("n", "<leader>bk", function () dap.step_over() end)
-map("n", "<leader>bl", function () dap.step_into() end)
-map("n", "<leader>b;", function () dap.repl.open() end)
 
 -- Alternate File
 map("n", "<leader>'", ":e # <CR>", options)
 
 ----------------------lsp----------------------
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    -- autocomplete
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+      if client:supports_method('textDocument/completion') then
+        vim.lsp.completion.enable(true, client.id, ev.buf, {
+          autotrigger = true,
+          convert = function(item)
+            return { abbr = item.label:gsub('%b()', '') }
+          end,
+        })
+      end
+
+    -- lsp mappings
+    local lsp_options = { noremap = true, silent = true, buffer = ev.buf }
+    map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
+  end,
+})
+
+-- servers
+vim.lsp.enable({
+  "lua_ls",
+  "ts_ls",
+  "rust_analyzer",
+})
+
+-- diagnostics
+vim.diagnostic.config({
+  virtual_text = { current_line = true },
+  -- virtual_lines = true
+})
 local goto_next, goto_prev = ts_repeat_move.make_repeatable_move_pair(vim.diagnostic.goto_next, vim.diagnostic.goto_prev)
 map("n", "<leader>dj", goto_next, options)
 map("n", "<leader>dk", goto_prev, options)
 map("n", "<leader>dl", vim.diagnostic.open_float, options)
-
-vim.api.nvim_create_autocmd("LspAttach", {
-  desc = "LSP Actions",
-  callback = function(event)
-    local lsp_options = { noremap = true, silent = true, buffer = event.buf }
-
-    map("n", "gd", vim.lsp.buf.definition, lsp_options)
-    map("n", "gD", vim.lsp.buf.declaration, lsp_options)
-    map("n", "gr", vim.lsp.buf.references, lsp_options)
-    map("n", "gI", vim.lsp.buf.implementation, lsp_options)
-
-    map("n", "<leader>ca", vim.lsp.buf.code_action, lsp_options)
-    map("n", "<leader>rn", vim.lsp.buf.rename, lsp_options)
-    map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
-
-    map("n", "<leader>D", vim.lsp.buf.type_definition, lsp_options)
-
-    map("i", "<C-h>", vim.lsp.buf.signature_help, lsp_options)
-  end,
-})
-
-local lsp_capabilities = require('blink.cmp').get_lsp_capabilities()
-
-local default_setup = function(server)
-  require('lspconfig')[server].setup({
-    capabilities = lsp_capabilities,
-  })
-end
--- require('lspconfig')['gleam'].setup({
---   capabilities = lsp_capabilities,
--- })
-
-require('mason').setup()
-require('mason-lspconfig').setup({
-  automatic_installation = false,
-  ensure_installed = {
-  -- "cssls",
-  -- "eslint",
-  -- "html",
-  -- "jsonls",
-  -- "rust_analyzer",
-  -- -- "sumneko_lua",
-  -- -- "tailwindcss",
-  -- "tsserver",
-  -- "yamlls",
-  },
-  handlers = {
-    default_setup,
-    lua_ls = function()
-      require('lspconfig').lua_ls.setup({
-        capabilities = lsp_capabilities,
-        settings = {
-          Lua = {
-            runtime = {
-              version = 'LuaJIT'
-            },
-            diagnostics = {
-              globals = {'vim'},
-            },
-            workspace = {
-              library = {
-                vim.env.VIMRUNTIME,
-              },
-            },
-          },
-        },
-      })
-    end
-  },
-})
 
 -- Completion
 -- local cmp = require("cmp")
