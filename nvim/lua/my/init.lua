@@ -245,6 +245,9 @@ require('lazy').setup({
   -- Loading Status
   { "j-hui/fidget.nvim", opts = {} },
 
+  -- Cloak
+  { "laytan/cloak.nvim", opts = {} },
+
 
   --     -- Snippets
   { 'L3MON4D3/LuaSnip', version = 'v2.*'},
@@ -442,6 +445,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.lsp.enable({
   "lua_ls",
   "ts_ls",
+  "eslint",
   "rust_analyzer",
 })
 
