@@ -308,16 +308,15 @@ vim.filetype.add({
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 parser_config.corl = {
   install_info = {
-    url = "~/dev/bitlikethis/corlang/tree-sitter-corl", -- local path or git repo
-    files = {"src/parser.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
-    -- optional entries:
-    -- branch = "main", -- default branch in case of git repo if different from master
-    -- generate_requires_npm = true, -- if stand-alone parser without npm dependencies
-    -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
+    url = vim.fn.expand("~/repos/bitlikethis/corlang/tree-sitter-corl"), -- expand ~ to absolute path
+    files = {"src/parser.c"},
   },
-  filetype = "corl", -- if filetype does not match the parser name
+  filetype = "corl",
 }
--- vim.treesitter.language.register('corl', 'corl')
+
+-- Corl queries are synced manually using /sync-queries command
+-- This is because nvim-treesitter doesn't respect runtimepath for queries
+
 
 ----------------------config----------------------
 
@@ -447,6 +446,10 @@ vim.lsp.enable({
   "ts_ls",
   "eslint",
   "rust_analyzer",
+  "gdscript",
+  "clangd",
+  "gleam",
+  "gopls",
 })
 
 -- diagnostics
@@ -567,6 +570,7 @@ require("nvim-treesitter.configs").setup({
         ["]r"] = "@parameter.inner",
         ["]t"] = "@type.inner",
         ["]f"] = "@function.outer",
+        ["]F"] = "@call.outer",
         ["]c"] = "@comment.outer",
         ["]v"] = "@variable.outer",
         ["];"] = "@pair",
@@ -578,7 +582,6 @@ require("nvim-treesitter.configs").setup({
       goto_next_end = {
         ["]R"] = "@parameter.inner",
         ["]T"] = "@type.inner",
-        ["]F"] = "@function.outer",
         ["]C"] = "@comment.outer",
         ["]V"] = "@variable.outer",
         ["]:"] = "@pair",
@@ -591,6 +594,7 @@ require("nvim-treesitter.configs").setup({
         ["[r"] = "@parameter.inner",
         ["[t"] = "@type.inner",
         ["[f"] = "@function.outer",
+        ["[F"] = "@call.outer",
         ["[c"] = "@comment.outer",
         ["[v"] = "@variable.outer",
         ["[;"] = "@pair",
@@ -602,7 +606,6 @@ require("nvim-treesitter.configs").setup({
       goto_previous_end = {
         ["[R"] = "@parameter.inner",
         ["[T"] = "@type.inner",
-        ["[F"] = "@function.outer",
         ["[C"] = "@comment.outer",
         ["[V"] = "@variable.outer",
         ["[:"] = "@pair",
