@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # wezterm
-cp -R ~/.wezterm.lua .
+cp -R ~/.config/wezterm/ wezterm/
 
 # nvim
 cp -R ~/.config/nvim/ nvim/

@@ -360,12 +360,20 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Color Schemes
-vim.cmd[[colorscheme catppuccin]]
--- vim.cmd[[colorscheme nightfox]]
--- vim.cmd[[colorscheme tokyonight]]
--- vim.cmd[[colorscheme dracula]]
--- vim.cmd[[colorscheme everblush]]
--- vim.cmd[[colorscheme oxocarbon]]
+vim.cmd.colorscheme("catppuccin")
+
+-- vim.cmd.colorscheme("coral")
+-- vim.opt.termguicolors = true
+-- vim.opt.guicursor = "n-v-c-sm:block-Cursor,i-ci-ve:ver25-Cursor,r-cr-o:hor20-Cursor"
+-- vim.cmd.colorscheme("nightfox")
+-- vim.cmd.colorscheme("tokyonight")
+-- vim.cmd.colorscheme("dracula")
+-- vim.cmd.colorscheme("everblush")
+-- vim.cmd.colorscheme("oxocarbon")
+
+-- Transparent background to let WezTerm grain show through
+vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#24273a" })
 
 ----------------------mappings----------------------
 local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
