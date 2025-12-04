@@ -59,7 +59,8 @@ config.color_schemes = {
   ["Coral Shore"] = make_color_scheme(shore),
 }
 
-config.color_scheme = "Coral Shore"
+-- config.color_scheme = "Coral Shore"
+config.color_scheme = "Catppuccin Mocha"
 
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = true
@@ -77,7 +78,7 @@ local grain_textures = {
   shore_v9 = config_dir .. "/coral_shore_grain_v9.png",
 }
 
-config.window_background_image = grain_textures.shore_v9
+config.window_background_image = grain_textures.mocha
 config.window_background_image_hsb = {
   brightness = 1.0,
   saturation = 1.0,
