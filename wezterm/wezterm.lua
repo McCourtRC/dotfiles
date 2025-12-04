@@ -1,7 +1,65 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
-config.color_scheme = "Catppuccin Mocha"
+-- Load palette from neovim colorscheme (single source of truth)
+local palettes_dir = os.getenv("HOME") .. "/repos/bitlikethis/corlang/corl/colorscheme/lua/coral/palettes"
+local shore = dofile(palettes_dir .. "/shore.lua")
+
+-- Build wezterm color scheme from palette
+local function make_color_scheme(p)
+  return {
+    foreground = p.pearl,
+    background = p.depth,
+    cursor_fg = p.depth,
+    cursor_bg = p.pearl,
+    cursor_border = p.pearl,
+    selection_fg = p.pearl,
+    selection_bg = p.current,
+
+    ansi = {
+      p.pearl,      -- 0 black
+      p.urchin,     -- 1 red
+      p.seafoam,    -- 2 green
+      p.anglerfish, -- 3 yellow
+      p.jellyfish,  -- 4 blue
+      p.anemone,    -- 5 magenta
+      p.coral,      -- 6 cyan
+      p.foam,       -- 7 white
+    },
+    brights = {
+      p.silt,       -- 8 bright black
+      p.urchin,     -- 9 bright red
+      p.plankton,   -- 10 bright green
+      p.starfish,   -- 11 bright yellow
+      p.nautilus,   -- 12 bright blue
+      p.mantaray,   -- 13 bright magenta
+      p.coral,      -- 14 bright cyan
+      p.pearl,      -- 15 bright white
+    },
+
+    tab_bar = {
+      background = p.twilight,
+      active_tab = {
+        bg_color = p.depth,
+        fg_color = p.pearl,
+      },
+      inactive_tab = {
+        bg_color = p.twilight,
+        fg_color = p.foam,
+      },
+      inactive_tab_hover = {
+        bg_color = p.current,
+        fg_color = p.pearl,
+      },
+    },
+  }
+end
+
+config.color_schemes = {
+  ["Coral Shore"] = make_color_scheme(shore),
+}
+
+config.color_scheme = "Coral Shore"
 
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = true
@@ -15,9 +73,11 @@ local config_dir = wezterm.config_dir or os.getenv("HOME") .. "/.config/wezterm"
 local grain_textures = {
   mocha = config_dir .. "/grain-texture-mocha.png",
   macchiato = config_dir .. "/grain-texture-macchiato.png",
+  shore_v6 = config_dir .. "/coral_shore_grain_v6.png",
+  shore_v9 = config_dir .. "/coral_shore_grain_v9.png",
 }
 
-config.window_background_image = grain_textures.mocha
+config.window_background_image = grain_textures.shore_v9
 config.window_background_image_hsb = {
   brightness = 1.0,
   saturation = 1.0,
