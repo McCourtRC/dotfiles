@@ -372,8 +372,8 @@ vim.cmd.colorscheme("catppuccin")
 -- vim.cmd.colorscheme("oxocarbon")
 
 -- Transparent background to let WezTerm grain show through
-vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#24273a" })
+-- vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+-- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#24273a" })
 
 ----------------------mappings----------------------
 local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
@@ -445,6 +445,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- lsp mappings
     local lsp_options = { noremap = true, silent = true, buffer = ev.buf }
     map("n", "<leader>=",  function () vim.lsp.buf.format({ async = true }) end, lsp_options)
+    map("n", "gd", vim.lsp.buf.definition, lsp_options)
   end,
 })
 
