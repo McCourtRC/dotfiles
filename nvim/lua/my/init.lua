@@ -429,6 +429,15 @@ map("n", "<leader>'", ":e # <CR>", options)
 
 ----------------------lsp----------------------
 
+-- Handle LSP commands (e.g., retrigger completion after directory selection)
+vim.lsp.commands["editor.action.triggerSuggest"] = function()
+  -- Defer to next event loop iteration so the completion item is fully applied
+  vim.schedule(function()
+    -- Use feedkeys to trigger completion menu (C-x C-o for omnifunc)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "m", false)
+  end)
+end
+
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(ev)
     -- autocomplete
